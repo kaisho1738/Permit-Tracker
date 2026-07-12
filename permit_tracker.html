@@ -59,13 +59,22 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 2rem 1.5rem 4rem;
+      padding: 0 0 4rem;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 1rem 1rem;
+      margin-bottom: 1rem;
     }
 
     /* ── PAGE HEADER ── */
     .page-header {
-      max-width: 100%;
-      margin: 0 auto 2rem;
+      max-width: 1900px;
+      margin: 0 auto;
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
@@ -73,16 +82,37 @@
     }
 
     .page-header h1 {
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 600;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.4px;
       line-height: 1.2;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .page-header h1 .title-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--accent-light);
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .page-header h1 .title-icon svg {
+      width: 17px;
+      height: 17px;
     }
 
     .page-header p {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-muted);
       margin-top: 4px;
+      margin-left: 40px;
     }
 
     .header-actions {
@@ -135,10 +165,24 @@
       flex-shrink: 0;
     }
 
+    /* ── DASHBOARD (stat cards + upcoming panel) ── */
+    .dashboard {
+      max-width: 1900px;
+      margin: 0 auto 1.25rem;
+      display: grid;
+      grid-template-columns: 2.3fr 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .dashboard-left {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
     /* ── SUMMARY CARDS ── */
     .summary {
-      max-width: 100%;
-      margin: 0 auto 1.5rem;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
@@ -148,8 +192,55 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 14px 18px;
+      padding: 14px 16px;
       box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-dark);
+      transform: translateY(-1px);
+    }
+
+    .stat-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .stat-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-2);
+      color: var(--text-muted);
+    }
+
+    .stat-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .stat-card[data-status="green"] .stat-icon {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .stat-card[data-status="amber"] .stat-icon {
+      background: var(--amber-bg);
+      color: var(--amber-text);
+    }
+
+    .stat-card[data-status="red"] .stat-icon {
+      background: var(--red-bg);
+      color: var(--red-text);
     }
 
     .stat-label {
@@ -158,11 +249,10 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 6px;
     }
 
     .stat-value {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 600;
       letter-spacing: -1px;
       line-height: 1;
@@ -180,9 +270,151 @@
       color: var(--red-text);
     }
 
+    /* ── DISTRIBUTION BAR ── */
+    .distribution-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .distribution-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+
+    .distribution-label-row span:first-child {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .distribution-label-row span:last-child {
+      font-size: 11.5px;
+      color: var(--text-faint);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .distribution-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 99px;
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+
+    .dist-segment {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .dist-red {
+      background: #D63B37;
+    }
+
+    .dist-amber {
+      background: #C98A10;
+    }
+
+    .dist-green {
+      background: #4E9A1A;
+    }
+
+    .dist-gray {
+      background: var(--border-dark);
+    }
+
+    /* ── UPCOMING EXPIRATIONS PANEL ── */
+    .upcoming-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 16px 12px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .upcoming-header {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .upcoming-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      overflow-y: auto;
+    }
+
+    .upcoming-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .upcoming-item:hover {
+      background: var(--surface-2);
+    }
+
+    .upcoming-item-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .upcoming-item-days {
+      font-size: 10.5px;
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .upcoming-item-days.red {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
+
+    .upcoming-item-days.amber {
+      background: var(--amber-bg);
+      color: var(--amber-text);
+    }
+
+    .upcoming-item-days.green {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .upcoming-empty {
+      font-size: 12.5px;
+      color: var(--text-faint);
+      padding: 10px 6px;
+    }
+
     /* ── TABLE CARD ── */
     .table-card {
-      max-width: 100%;
+      max-width: 1900px;
       margin: 0 auto;
       background: var(--surface);
       border: 1px solid var(--border);
@@ -200,6 +432,97 @@
       border-bottom: 1px solid var(--border);
       gap: 12px;
       flex-wrap: wrap;
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12.5px;
+      font-weight: 500;
+      border-radius: 99px;
+      border: 1px solid var(--border-dark);
+      background: var(--surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+    }
+
+    .filter-pill:hover {
+      background: var(--surface-2);
+    }
+
+    .filter-pill .filter-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      opacity: 0.75;
+    }
+
+    .filter-pill.active {
+      color: var(--text);
+      border-color: var(--border-dark);
+      background: var(--surface-2);
+    }
+
+    .filter-pill[data-status="all"].active {
+      background: var(--text);
+      border-color: var(--text);
+      color: #fff;
+    }
+
+    .filter-pill[data-status="all"].active .filter-count {
+      opacity: 0.85;
+    }
+
+    .filter-pill[data-status="green"] .filter-dot {
+      background: #4E9A1A;
+    }
+
+    .filter-pill[data-status="amber"] .filter-dot {
+      background: #C98A10;
+    }
+
+    .filter-pill[data-status="red"] .filter-dot {
+      background: #D63B37;
+    }
+
+    .filter-pill[data-status="green"].active {
+      background: var(--green-bg);
+      border-color: var(--green-border);
+      color: var(--green-text);
+    }
+
+    .filter-pill[data-status="amber"].active {
+      background: var(--amber-bg);
+      border-color: var(--amber-border);
+      color: var(--amber-text);
+    }
+
+    .filter-pill[data-status="red"].active {
+      background: var(--red-bg);
+      border-color: var(--red-border);
+      color: var(--red-text);
+    }
+
+    .filter-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--text-faint);
     }
 
     .search-wrap {
@@ -258,6 +581,9 @@
       background: var(--surface-2);
       border-bottom: 1px solid var(--border);
       user-select: none;
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
 
     thead th.sortable {
@@ -349,12 +675,16 @@
       transition: background 0.08s;
     }
 
+    tbody tr:nth-child(even) {
+      background: #FAFAF8;
+    }
+
     tbody tr:last-child {
       border-bottom: none;
     }
 
     tbody tr:hover {
-      background: #FAFAF7;
+      background: #F3F2ED;
     }
 
     td {
@@ -511,7 +841,7 @@
 
     /* ── FOOTER / LEGEND ── */
     .legend {
-      max-width: 100%;
+      max-width: 1900px;
       margin: 1rem auto 0;
       display: flex;
       gap: 20px;
@@ -555,6 +885,20 @@
       transform: translateY(0);
     }
 
+    .page-content {
+      padding: 0 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .upcoming-panel {
+        order: -1;
+      }
+    }
+
     @media (max-width: 700px) {
       .summary {
         grid-template-columns: repeat(2, 1fr);
@@ -583,110 +927,192 @@
 
 <body>
 
-  <!-- PAGE HEADER -->
-  <div class="page-header">
-    <div>
-      <h1>Permit Tracker</h1>
-      <p>Monitor and manage powerplant permit validity in real time</p>
-    </div>
-    <div class="header-actions">
-      <button class="btn" onclick="exportCSV()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M3 12h10M8 2v7m0 0L5.5 6.5M8 9l2.5-2.5" />
-        </svg>
-        Export CSV
-      </button>
-      <button class="btn btn-primary" onclick="addRow()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M8 3v10M3 8h10" />
-        </svg>
-        Add Permit
-      </button>
-    </div>
-  </div>
-
-  <!-- SUMMARY CARDS -->
-  <div class="summary">
-    <div class="stat-card">
-      <div class="stat-label">Total Permits</div>
-      <div class="stat-value" id="s-total">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Safe (6+ months)</div>
-      <div class="stat-value green" id="s-green">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Expiring (3–6 mo.)</div>
-      <div class="stat-value amber" id="s-amber">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Critical/Expired</div>
-      <div class="stat-value red" id="s-red">0</div>
-    </div>
-  </div>
-
-  <!-- TABLE CARD -->
-  <div class="table-card">
-    <div class="toolbar">
-      <div class="search-wrap">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="7" cy="7" r="4.5" />
-          <path d="M10.5 10.5L13 13" />
-        </svg>
-        <input type="text" id="search-input" placeholder="Search permits..." oninput="renderTable()" />
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="page-header">
+      <div>
+        <h1>
+          <span class="title-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="2" width="10" height="12" rx="1.5" />
+              <path d="M6 6h4M6 8.5h4M6 11h2.5" />
+            </svg>
+          </span>
+          Permit Tracker
+        </h1>
+        <p>Monitor and manage powerplant permit validity in real time</p>
       </div>
-      <span style="font-size:12px; color:var(--text-muted);" id="row-count"></span>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th class="sortable" onclick="sortBy('plant')" id="th-plant">
-            Powerplant Name <span class="sort-icon"></span>
-          </th>
-          <th class="sortable empty-state" onclick="sortBy('environmental_law')" id="th-environmental_law">
-            Environmental Law <span class="sort-icon"></span>
-          </th>
-          <th class="empty-state" id="th-description">
-            Description
-          </th>
-          <th class="sortable" onclick="sortBy('permit')" id="th-permit">
-            Permit <span class="sort-icon"></span>
-          </th>
-          <th class="empty-state" id="th-unit/coverage">
-            Unit / Coverage
-          </th>
-          <th class="empty-state" id="th-permit-no">
-            Permit No.
-          </th>
-          <th class="sortable" onclick="sortBy('date_issued')" id="th-date_issued">
-            Date Issued <span class="sort-icon"></span>
-          </th>
-          <th class="sortable" onclick="sortBy('expiry')" id="th-expiry">
-            Expiry Date <span class="sort-icon"></span>
-          </th>
-          <th>Status</th>
-          <th>Remarks</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div class="empty-state" id="empty-state" style="display:none;">
-      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="6" y="4" width="28" height="32" rx="3" />
-        <path d="M13 14h14M13 20h14M13 26h8" />
-      </svg>
-      <p>No permits yet — click <strong>Add Permit</strong> to get started.</p>
+      <div class="header-actions">
+        <input type="file" id="import-file" accept=".csv,text/csv" style="display:none" onchange="importCSV(event)" />
+        <button class="btn" onclick="document.getElementById('import-file').click()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 12h10M8 12V5m0 0L5.5 7.5M8 5l2.5 2.5" />
+          </svg>
+          Import CSV
+        </button>
+        <button class="btn" onclick="exportCSV()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 12h10M8 2v7m0 0L5.5 6.5M8 9l2.5-2.5" />
+          </svg>
+          Export CSV
+        </button>
+        <button class="btn btn-primary" onclick="addRow()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3v10M3 8h10" />
+          </svg>
+          Add Permit
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- LEGEND -->
-  <div class="legend">
-    <div class="legend-item"><span class="legend-dot" style="background:#4E9A1A;"></span> 6+ months remaining</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#C98A10;"></span> 3–6 months remaining</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#D63B37;"></span> Under 3 months / expired</div>
-  </div>
+  <div class="page-content">
+
+    <!-- DASHBOARD: stat cards + distribution bar (left), upcoming expirations (right) -->
+    <div class="dashboard">
+      <div class="dashboard-left">
+        <div class="summary">
+          <div class="stat-card" data-status="all" onclick="setFilter('all')">
+            <span class="stat-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="12" height="12" rx="2" />
+                <path d="M5 8h6M5 5.5h6M5 10.5h3.5" />
+              </svg>
+            </span>
+            <div class="stat-label">Total Permits</div>
+            <div class="stat-value" id="s-total">0</div>
+          </div>
+          <div class="stat-card" data-status="green" onclick="setFilter('green')">
+            <span class="stat-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 8.5l3 3 7-7" />
+              </svg>
+            </span>
+            <div class="stat-label">Safe (6+ months)</div>
+            <div class="stat-value green" id="s-green">0</div>
+          </div>
+          <div class="stat-card" data-status="amber" onclick="setFilter('amber')">
+            <span class="stat-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="8" cy="8" r="6" />
+                <path d="M8 5v3.3l2 1.7" />
+              </svg>
+            </span>
+            <div class="stat-label">Expiring (3–6 mo.)</div>
+            <div class="stat-value amber" id="s-amber">0</div>
+          </div>
+          <div class="stat-card" data-status="red" onclick="setFilter('red')">
+            <span class="stat-icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M8 2l6.9 12H1.1L8 2z" />
+                <path d="M8 6.3v3.4" />
+                <circle cx="8" cy="11.8" r="0.4" fill="currentColor" />
+              </svg>
+            </span>
+            <div class="stat-label">Critical/Expired</div>
+            <div class="stat-value red" id="s-red">0</div>
+          </div>
+        </div>
+
+        <div class="distribution-card">
+          <div class="distribution-label-row">
+            <span>Status Breakdown</span>
+            <span id="dist-total-label">0 permits</span>
+          </div>
+          <div class="distribution-bar">
+            <div class="dist-segment dist-red" id="dist-red" style="width:0%"></div>
+            <div class="dist-segment dist-amber" id="dist-amber" style="width:0%"></div>
+            <div class="dist-segment dist-green" id="dist-green" style="width:0%"></div>
+            <div class="dist-segment dist-gray" id="dist-gray" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="upcoming-panel">
+        <div class="upcoming-header">Next to Expire</div>
+        <div class="upcoming-list" id="upcoming-list"></div>
+      </div>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="table-card">
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-pill" data-status="all" onclick="setFilter('all')">
+          <span class="filter-dot"></span> All <span class="filter-count" id="f-all">0</span>
+        </button>
+        <button class="filter-pill" data-status="red" onclick="setFilter('red')">
+          <span class="filter-dot"></span> Critical / Expired <span class="filter-count" id="f-red">0</span>
+        </button>
+        <button class="filter-pill" data-status="amber" onclick="setFilter('amber')">
+          <span class="filter-dot"></span> Expiring Soon <span class="filter-count" id="f-amber">0</span>
+        </button>
+        <button class="filter-pill" data-status="green" onclick="setFilter('green')">
+          <span class="filter-dot"></span> Safe <span class="filter-count" id="f-green">0</span>
+        </button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="7" cy="7" r="4.5" />
+            <path d="M10.5 10.5L13 13" />
+          </svg>
+          <input type="text" id="search-input" placeholder="Search permits..." oninput="renderTable()" />
+        </div>
+        <span style="font-size:12px; color:var(--text-muted);" id="row-count"></span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th class="sortable" onclick="sortBy('plant')" id="th-plant">
+              Powerplant Name <span class="sort-icon"></span>
+            </th>
+            <th class="sortable empty-state" onclick="sortBy('environmental_law')" id="th-environmental_law">
+              Environmental Law <span class="sort-icon"></span>
+            </th>
+            <th class="empty-state" id="th-description">
+              Description
+            </th>
+            <th class="sortable" onclick="sortBy('permit')" id="th-permit">
+              Permit <span class="sort-icon"></span>
+            </th>
+            <th class="empty-state" id="th-unit/coverage">
+              Unit / Coverage
+            </th>
+            <th class="empty-state" id="th-permit-no">
+              Permit No.
+            </th>
+            <th class="sortable" onclick="sortBy('date_issued')" id="th-date_issued">
+              Date Issued <span class="sort-icon"></span>
+            </th>
+            <th class="sortable" onclick="sortBy('expiry')" id="th-expiry">
+              Expiry Date <span class="sort-icon"></span>
+            </th>
+            <th>Status</th>
+            <th>Remarks</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="6" y="4" width="28" height="32" rx="3" />
+          <path d="M13 14h14M13 20h14M13 26h8" />
+        </svg>
+        <p>No permits yet — click <strong>Add Permit</strong> to get started.</p>
+      </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#4E9A1A;"></span> 6+ months remaining</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#C98A10;"></span> 3–6 months remaining</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#D63B37;"></span> Under 3 months / expired
+      </div>
+    </div>
+
+  </div><!-- /.page-content -->
 
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
@@ -697,6 +1123,12 @@
     let nextId = 1; //for generating unique IDs for rows
     let sortDir = 'asc';
     let sortField = 'expiry';
+    let statusFilter = 'all'; // 'all' | 'red' | 'amber' | 'green'
+
+    function setFilter(status) {
+      statusFilter = status;
+      renderTable();
+    }
 
     function loadData() {
       try {
@@ -895,13 +1327,27 @@
         (r.permit || '').toLowerCase().includes(query)
       )
 
+      // apply status filter (All / Critical-Expired / Expiring Soon / Safe)
+      if (statusFilter !== 'all') {
+        filtered = filtered.filter(r => getStatus(getMonthsDiff(r.expiry)) === statusFilter);
+      }
+
       const sorted = getSortedRows(filtered); //sort filtered results
 
       const tbody = document.getElementById('tbody');
       const emptyState = document.getElementById('empty-state');
+      const emptyStateText = emptyState.querySelector('p');
 
-      // no permit message if table is empty
-      emptyState.style.display = rows.length === 0 ? 'block' : 'none';
+      // empty state: no permits at all vs. none matching the current filter/search
+      if (rows.length === 0) {
+        emptyStateText.innerHTML = 'No permits yet — click <strong>Add Permit</strong> to get started.';
+        emptyState.style.display = 'block';
+      } else if (sorted.length === 0) {
+        emptyStateText.textContent = 'No permits match this filter.';
+        emptyState.style.display = 'block';
+      } else {
+        emptyState.style.display = 'none';
+      }
 
       tbody.innerHTML = '';
 
@@ -982,11 +1428,77 @@
       document.getElementById('s-amber').textContent = counts.amber;
       document.getElementById('s-red').textContent = counts.red;
 
+      // filter pill counts (always reflect the full, unfiltered row set)
+      document.getElementById('f-all').textContent = rows.length;
+      document.getElementById('f-red').textContent = counts.red;
+      document.getElementById('f-amber').textContent = counts.amber;
+      document.getElementById('f-green').textContent = counts.green;
+      updateFilterPills();
+      updateDashboard(counts);
+
+      const isFiltered = query || statusFilter !== 'all';
       document.getElementById('row-count').textContent =
-        query ? `${sorted.length} of ${rows.length} permit${rows.length !== 1 ? 's' : ''}` :
+        isFiltered ? `${sorted.length} of ${rows.length} permit${rows.length !== 1 ? 's' : ''}` :
           `${rows.length} permit${rows.length !== 1 ? 's' : ''}`;
 
       updateSortHeaders();
+    }
+
+    function updateFilterPills() {
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.status === statusFilter);
+      });
+      document.querySelectorAll('.stat-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.status === statusFilter);
+      });
+    }
+
+    // Updates the status-distribution bar and the "Next to Expire" panel.
+    // Both are always based on the full row set, independent of search/filter.
+    function updateDashboard(counts) {
+      const total = rows.length;
+      const grayCount = Math.max(0, total - counts.green - counts.amber - counts.red);
+
+      document.getElementById('dist-total-label').textContent =
+        `${total} permit${total !== 1 ? 's' : ''}`;
+
+      const segments = [
+        ['dist-red', counts.red],
+        ['dist-amber', counts.amber],
+        ['dist-green', counts.green],
+        ['dist-gray', grayCount]
+      ];
+      segments.forEach(([id, val]) => {
+        const pct = total > 0 ? (val / total * 100) : 0;
+        document.getElementById(id).style.width = pct + '%';
+      });
+
+      // Nearest 5 permits by expiry date (overdue ones included, sorted soonest first).
+      const upcoming = rows
+        .filter(r => r.expiry)
+        .map(r => ({ row: r, months: getMonthsDiff(r.expiry) }))
+        .sort((a, b) => new Date(a.row.expiry) - new Date(b.row.expiry))
+        .slice(0, 5);
+
+      const list = document.getElementById('upcoming-list');
+      if (upcoming.length === 0) {
+        list.innerHTML = '<div class="upcoming-empty">No permits with expiry dates yet.</div>';
+        return;
+      }
+
+      list.innerHTML = upcoming.map(({ row: r, months }) => {
+        const status = getStatus(months);
+        const days = Math.round(months * 30.4375);
+        const dayLabel = days < 0 ? `${Math.abs(days)}d overdue` : `${days}d left`;
+        const pillClass = status === 'red' ? 'red' : status === 'amber' ? 'amber' : 'green';
+        const name = r.plant && r.plant.trim() ? r.plant : 'Untitled permit';
+        return `
+          <div class="upcoming-item" onclick="setFilter('${status}')" title="${esc(name)}">
+            <span class="upcoming-item-name">${esc(name)}</span>
+            <span class="upcoming-item-days ${pillClass}">${dayLabel}</span>
+          </div>
+        `;
+      }).join('');
     }
 
     function exportCSV() {
@@ -1013,6 +1525,133 @@
       a.click();
       URL.revokeObjectURL(url);
       showToast('CSV exported');
+    }
+
+    // Parses raw CSV text into a 2D array of rows/fields.
+    // Handles quoted fields, escaped "" quotes, and quoted newlines (RFC 4180-ish).
+    function parseCSVText(text) {
+      const table = [];
+      let row = [];
+      let field = '';
+      let inQuotes = false;
+      const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+      for (let i = 0; i < normalized.length; i++) {
+        const c = normalized[i];
+        if (inQuotes) {
+          if (c === '"') {
+            if (normalized[i + 1] === '"') { field += '"'; i++; } // escaped quote
+            else { inQuotes = false; }
+          } else {
+            field += c;
+          }
+        } else if (c === '"') {
+          inQuotes = true;
+        } else if (c === ',') {
+          row.push(field); field = '';
+        } else if (c === '\n') {
+          row.push(field); table.push(row); row = []; field = '';
+        } else {
+          field += c;
+        }
+      }
+      if (field.length > 0 || row.length > 0) { row.push(field); table.push(row); }
+      return table;
+    }
+
+    // Accepts 'YYYY-MM-DD' as-is; otherwise tries to parse common date formats
+    // (e.g. from a spreadsheet edit) and reformats to the <input type="date"> shape.
+    function normalizeDateStr(str) {
+      const s = (str || '').trim();
+      if (!s) return '';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const d = new Date(s);
+      if (isNaN(d.getTime())) return '';
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function importCSV(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const table = parseCSVText(String(e.target.result));
+          if (table.length < 2) { showToast('CSV has no data rows'); return; }
+
+          const header = table[0].map(h => h.trim().toLowerCase());
+          const colIndex = name => header.indexOf(name);
+          const col = {
+            plant: colIndex('powerplant name'),
+            environmental_law: colIndex('environmental law'),
+            description: colIndex('description'),
+            permit: colIndex('permit'),
+            unit_coverage: colIndex('unit / coverage'),
+            permit_no: colIndex('permit no.'),
+            date_issued: colIndex('date issued'),
+            expiry: colIndex('expiry date'),
+            remarks: colIndex('remarks')
+          };
+
+          // require at least a plant or permit column to trust this is the right format
+          if (col.plant === -1 && col.permit === -1) {
+            showToast("CSV headers don't match the expected export format");
+            return;
+          }
+
+          const get = (r, key) => col[key] > -1 ? (r[col[key]] || '').trim() : '';
+          let imported = 0;
+
+          for (let i = 1; i < table.length; i++) {
+            const r = table[i];
+            if (!r || r.every(c => (c || '').trim() === '')) continue; // skip blank lines
+
+            const expiry = normalizeDateStr(get(r, 'expiry'));
+            const date_issued = normalizeDateStr(get(r, 'date_issued'));
+
+            // strip the leading [GREEN]/[ORANGE]/[RED]/[GRAY] status code our export adds
+            let remarks = get(r, 'remarks').replace(/^\[(GREEN|ORANGE|RED|GRAY)\]\s*/i, '');
+            const autoText = getRemarks(getMonthsDiff(expiry));
+            // if remarks are blank or match what we'd auto-generate, keep it in auto mode
+            const remarksAuto = (remarks === '' || remarks === autoText);
+
+            rows.push({
+              id: nextId++,
+              plant: get(r, 'plant'),
+              environmental_law: get(r, 'environmental_law'),
+              description: get(r, 'description'),
+              permit: get(r, 'permit'),
+              unit_coverage: get(r, 'unit_coverage'),
+              permit_no: get(r, 'permit_no'),
+              date_issued,
+              expiry,
+              remarks: remarksAuto ? autoText : remarks,
+              remarksAuto
+            });
+            imported++;
+          }
+
+          if (imported === 0) {
+            showToast('No permit rows found in that file');
+            return;
+          }
+
+          saveData();
+          renderTable();
+          showToast(`Imported ${imported} permit${imported !== 1 ? 's' : ''}`);
+        } catch (err) {
+          console.error('Error importing CSV:', err);
+          showToast('Failed to import CSV');
+        } finally {
+          event.target.value = ''; // reset so re-selecting the same file re-fires onchange
+        }
+      };
+      reader.onerror = () => showToast('Could not read that file');
+      reader.readAsText(file);
     }
 
     // utility
