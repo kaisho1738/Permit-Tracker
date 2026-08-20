@@ -2,1679 +2,527 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Permit Expiry Tracker</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap"
-    rel="stylesheet" />
-  <!-- Front End-->
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #F5F4F0;
-      --surface: #FFFFFF;
-      --surface-2: #F0EFE9;
-      --border: #E2E0D8;
-      --border-dark: #C8C6BC;
-      --text: #1A1A18;
-      --text-muted: #7A7970;
-      --text-faint: #AEADA5;
-
-      --green-bg: #EAF3DE;
-      --green-border: #B4D880;
-      --green-text: #2E5A0E;
-
-      --amber-bg: #FEF3D8;
-      --amber-border: #F5CC6A;
-      --amber-text: #7A4E08;
-
-      --red-bg: #FDECEA;
-      --red-border: #F5A8A4;
-      --red-text: #8B1F1C;
-
-      --gray-bg: #EEEDE8;
-      --gray-border: #D0CFC8;
-      --gray-text: #7A7970;
-
-      --accent: #2B5CE6;
-      --accent-light: #EBF0FD;
-
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 0 0 4rem;
-    }
-
-    /* ── TOP BAR ── */
-    .topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      padding: 1rem 1rem;
-      margin-bottom: 1rem;
-    }
-
-    /* ── PAGE HEADER ── */
-    .page-header {
-      max-width: 1900px;
-      margin: 0 auto;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .page-header h1 {
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: -0.4px;
-      line-height: 1.2;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .page-header h1 .title-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      background: var(--accent-light);
-      color: var(--accent);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .page-header h1 .title-icon svg {
-      width: 17px;
-      height: 17px;
-    }
-
-    .page-header p {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      margin-left: 40px;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-shrink: 0;
-    }
-
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-dark);
-      background: var(--surface);
-      color: var(--text);
-      cursor: pointer;
-      transition: background 0.12s, box-shadow 0.12s;
-      white-space: nowrap;
-    }
-
-    .btn:hover {
-      background: var(--surface-2);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    .btn-primary:hover {
-      background: #1E4BD4;
-    }
-
-    .btn svg {
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
-    }
-
-    /* ── DASHBOARD (stat cards + upcoming panel) ── */
-    .dashboard {
-      max-width: 1900px;
-      margin: 0 auto 1.25rem;
-      display: grid;
-      grid-template-columns: 2.3fr 1fr;
-      gap: 14px;
-      align-items: stretch;
-    }
-
-    .dashboard-left {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* ── SUMMARY CARDS ── */
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 14px 16px;
-      box-shadow: var(--shadow-sm);
-      cursor: pointer;
-      transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .stat-card:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--border-dark);
-      transform: translateY(-1px);
-    }
-
-    .stat-card.active {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    .stat-icon {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface-2);
-      color: var(--text-muted);
-    }
-
-    .stat-icon svg {
-      width: 14px;
-      height: 14px;
-    }
-
-    .stat-card[data-status="green"] .stat-icon {
-      background: var(--green-bg);
-      color: var(--green-text);
-    }
-
-    .stat-card[data-status="amber"] .stat-icon {
-      background: var(--amber-bg);
-      color: var(--amber-text);
-    }
-
-    .stat-card[data-status="red"] .stat-icon {
-      background: var(--red-bg);
-      color: var(--red-text);
-    }
-
-    .stat-label {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .stat-value {
-      font-size: 26px;
-      font-weight: 600;
-      letter-spacing: -1px;
-      line-height: 1;
-    }
-
-    .stat-value.green {
-      color: var(--green-text);
-    }
-
-    .stat-value.amber {
-      color: var(--amber-text);
-    }
-
-    .stat-value.red {
-      color: var(--red-text);
-    }
-
-    /* ── DISTRIBUTION BAR ── */
-    .distribution-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 14px 18px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .distribution-label-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 9px;
-    }
-
-    .distribution-label-row span:first-child {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .distribution-label-row span:last-child {
-      font-size: 11.5px;
-      color: var(--text-faint);
-      font-family: 'DM Mono', monospace;
-    }
-
-    .distribution-bar {
-      display: flex;
-      height: 8px;
-      border-radius: 99px;
-      overflow: hidden;
-      background: var(--surface-2);
-    }
-
-    .dist-segment {
-      height: 100%;
-      transition: width 0.3s ease;
-    }
-
-    .dist-red {
-      background: #D63B37;
-    }
-
-    .dist-amber {
-      background: #C98A10;
-    }
-
-    .dist-green {
-      background: #4E9A1A;
-    }
-
-    .dist-gray {
-      background: var(--border-dark);
-    }
-
-    /* ── UPCOMING EXPIRATIONS PANEL ── */
-    .upcoming-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px 16px 12px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .upcoming-header {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      flex-shrink: 0;
-    }
-
-    .upcoming-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      overflow-y: auto;
-    }
-
-    .upcoming-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 8px 6px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-
-    .upcoming-item:hover {
-      background: var(--surface-2);
-    }
-
-    .upcoming-item-name {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .upcoming-item-days {
-      font-size: 10.5px;
-      font-family: 'DM Mono', monospace;
-      font-weight: 500;
-      padding: 3px 8px;
-      border-radius: 99px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .upcoming-item-days.red {
-      background: var(--red-bg);
-      color: var(--red-text);
-    }
-
-    .upcoming-item-days.amber {
-      background: var(--amber-bg);
-      color: var(--amber-text);
-    }
-
-    .upcoming-item-days.green {
-      background: var(--green-bg);
-      color: var(--green-text);
-    }
-
-    .upcoming-empty {
-      font-size: 12.5px;
-      color: var(--text-faint);
-      padding: 10px 6px;
-    }
-
-    /* ── TABLE CARD ── */
-    .table-card {
-      max-width: 1900px;
-      margin: 0 auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-    }
-
-    /* ── TOOLBAR ── */
-    .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border);
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    /* ── FILTER BAR ── */
-    .filter-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 18px;
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
-
-    .filter-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12.5px;
-      font-weight: 500;
-      border-radius: 99px;
-      border: 1px solid var(--border-dark);
-      background: var(--surface);
-      color: var(--text-muted);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.12s, border-color 0.12s, color 0.12s;
-    }
-
-    .filter-pill:hover {
-      background: var(--surface-2);
-    }
-
-    .filter-pill .filter-count {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      opacity: 0.75;
-    }
-
-    .filter-pill.active {
-      color: var(--text);
-      border-color: var(--border-dark);
-      background: var(--surface-2);
-    }
-
-    .filter-pill[data-status="all"].active {
-      background: var(--text);
-      border-color: var(--text);
-      color: #fff;
-    }
-
-    .filter-pill[data-status="all"].active .filter-count {
-      opacity: 0.85;
-    }
-
-    .filter-pill[data-status="green"] .filter-dot {
-      background: #4E9A1A;
-    }
-
-    .filter-pill[data-status="amber"] .filter-dot {
-      background: #C98A10;
-    }
-
-    .filter-pill[data-status="red"] .filter-dot {
-      background: #D63B37;
-    }
-
-    .filter-pill[data-status="green"].active {
-      background: var(--green-bg);
-      border-color: var(--green-border);
-      color: var(--green-text);
-    }
-
-    .filter-pill[data-status="amber"].active {
-      background: var(--amber-bg);
-      border-color: var(--amber-border);
-      color: var(--amber-text);
-    }
-
-    .filter-pill[data-status="red"].active {
-      background: var(--red-bg);
-      border-color: var(--red-border);
-      color: var(--red-text);
-    }
-
-    .filter-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: var(--text-faint);
-    }
-
-    .search-wrap {
-      position: relative;
-      flex: 1;
-      max-width: 300px;
-    }
-
-    .search-wrap svg {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 14px;
-      height: 14px;
-      color: var(--text-faint);
-      pointer-events: none;
-    }
-
-    .search-wrap input {
-      width: 100%;
-      padding: 7px 12px 7px 32px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      border: 1px solid var(--border-dark);
-      border-radius: var(--radius-md);
-      background: var(--bg);
-      color: var(--text);
-      outline: none;
-    }
-
-    .search-wrap input:focus {
-      border-color: var(--accent);
-      background: var(--surface);
-    }
-
-    .search-wrap input::placeholder {
-      color: var(--text-faint);
-    }
-
-    /* ── TABLE ── */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-
-    thead th {
-      padding: 6px 16px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      background: var(--surface-2);
-      border-bottom: 1px solid var(--border);
-      user-select: none;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-
-    thead th.sortable {
-      cursor: pointer;
-    }
-
-    thead th.sortable:hover {
-      color: var(--text);
-    }
-
-    thead th .sort-icon {
-      display: inline-block;
-      margin-left: 4px;
-      opacity: 0.4;
-      font-size: 10px;
-    }
-
-    thead th.sort-asc .sort-icon::after {
-      content: '↑';
-      opacity: 1;
-    }
-
-    thead th.sort-desc .sort-icon::after {
-      content: '↓';
-      opacity: 1;
-    }
-
-    thead th:not(.sort-asc):not(.sort-desc) .sort-icon::after {
-      content: '↕';
-    }
-
-    /* Powerplant name  */
-    th:nth-child(1) {
-      width: 10%;
-    }
-
-    /*Environmetal Law  */
-    th:nth-child(2) {
-      width: 12%;
-    }
-
-    /* Description  */
-    th:nth-child(3) {
-      width: 12%;
-    }
-
-    /* Permit */
-    th:nth-child(4) {
-      width: 10%;
-    }
-
-    /* Unit / Coverage */
-    th:nth-child(5) {
-      width: 10%;
-    }
-
-    /* Permit No. */
-    th:nth-child(6) {
-      width: 9%;
-    }
-
-    /* Date Issued */
-    th:nth-child(7) {
-      width: 8%;
-    }
-
-    /* Expiry Date */
-    th:nth-child(8) {
-      width: 8%;
-    }
-
-    /* Status */
-    th:nth-child(9) {
-      width: 8%;
-    }
-
-    /* Remarks */
-    th:nth-child(10) {
-      width: 8%;
-    }
-
-    /* Delete Button */
-    th:nth-child(11) {
-      width: 4%;
-    }
-
-    tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background 0.08s;
-    }
-
-    tbody tr:nth-child(even) {
-      background: #FAFAF8;
-    }
-
-    tbody tr:last-child {
-      border-bottom: none;
-    }
-
-    tbody tr:hover {
-      background: #F3F2ED;
-    }
-
-    td {
-      padding: 10px 16px;
-      font-size: 14px;
-      vertical-align: middle;
-      text-align: left;
-    }
-
-    /* Inline edit inputs */
-    td input[type="text"],
-    td input[type="date"],
-    td textarea {
-      width: 100%;
-      background: transparent;
-      border: none;
-      border-bottom: 1.5px solid transparent;
-      outline: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      color: var(--text);
-      padding: 2px 0;
-      transition: border-color 0.12s;
-    }
-
-    td textarea {
-      resize: vertical;
-      min-height: 60px;
-      white-space: pre-wrap;
-      overflow-wrap: break-word;
-    }
-
-    td input[type="text"]:focus,
-    td input[type="date"]:focus,
-    td textarea:focus {
-      border-bottom-color: var(--accent);
-      background: var(--accent-light);
-      border-radius: 2px;
-      padding: 2px 4px;
-    }
-
-    td input::placeholder {
-      color: var(--text-faint);
-      font-style: italic;
-    }
-
-    td input[type="date"] {
-      cursor: pointer;
-    }
-
-    td input[type="date"]::-webkit-calendar-picker-indicator {
-      opacity: 0.4;
-      cursor: pointer;
-    }
-
-    /* ── BADGE ── */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 99px;
-      font-size: 12px;
-      font-weight: 500;
-      border: 1px solid transparent;
-      white-space: nowrap;
-    }
-
-    .badge-green {
-      background: var(--green-bg);
-      border-color: var(--green-border);
-      color: var(--green-text);
-    }
-
-    .badge-amber {
-      background: var(--amber-bg);
-      border-color: var(--amber-border);
-      color: var(--amber-text);
-    }
-
-    .badge-red {
-      background: var(--red-bg);
-      border-color: var(--red-border);
-      color: var(--red-text);
-    }
-
-    .badge-gray {
-      background: var(--gray-bg);
-      border-color: var(--gray-border);
-      color: var(--gray-text);
-    }
-
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .badge-green .badge-dot {
-      background: #4E9A1A;
-    }
-
-    .badge-amber .badge-dot {
-      background: #C98A10;
-    }
-
-    .badge-red .badge-dot {
-      background: #D63B37;
-    }
-
-    .badge-gray .badge-dot {
-      background: var(--text-faint);
-    }
-
-    /* ── DELETE BUTTON ── */
-    .del-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-faint);
-      width: 28px;
-      height: 28px;
-      border-radius: var(--radius-sm);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      transition: background 0.1s, color 0.1s;
-    }
-
-    .del-btn:hover {
-      background: var(--red-bg);
-      color: var(--red-text);
-    }
-
-    /* ── EMPTY STATE ── */
-    .empty-state {
-      text-align: center;
-      padding: 3rem 1.5rem;
-      color: var(--text-muted);
-    }
-
-    .empty-state svg {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 12px;
-      opacity: 0.25;
-    }
-
-    .empty-state p {
-      font-size: 14px;
-    }
-
-    /* ── FOOTER / LEGEND ── */
-    .legend {
-      max-width: 1900px;
-      margin: 1rem auto 0;
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    /* ── TOAST ── */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--text);
-      color: #fff;
-      font-size: 13px;
-      padding: 10px 18px;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-md);
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.2s, transform 0.2s;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .page-content {
-      padding: 0 1.5rem;
-    }
-
-    @media (max-width: 900px) {
-      .dashboard {
-        grid-template-columns: 1fr;
-      }
-
-      .upcoming-panel {
-        order: -1;
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Permit Tracker Dashboard</title>
+
+  <!-- Tailwind CSS, FontAwesome & Custom CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            // Light Mode Brand Palette
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            },
+            danger: {
+              50: '#fef2f2',
+              100: '#fee2e2',
+              200: '#fecaca',
+              500: '#ef4444',
+              600: '#dc2626',
+            },
+            warning: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              500: '#f59e0b',
+              600: '#d97706',
+            },
+            success: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              500: '#22c55e',
+              600: '#16a34a',
+            },
+            // Dark Mode Semantic Palette
+            "surface": "#0f172a",
+            "background": "#10131a",
+            "on-surface": "#f8fafc",
+            "on-surface-variant": "#c2c6d6",
+            "surface-container": "#1d2027",
+            "surface-container-low": "#191b23",
+            "surface-container-high": "#272a31",
+            "surface-container-highest": "#32353c",
+            "outline": "#475569",
+            "outline-variant": "#424754",
+            "primary": "#adc6ff",
+            "on-primary": "#002e6a",
+            "primary-container": "#4d8eff",
+            "error": "#ef4444",
+            "error-container": "#93000a",
+            "on-error": "#690005"
+          }
+        }
       }
     }
-
-    @media (max-width: 700px) {
-      .summary {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      th:nth-child(1),
-      th:nth-child(2) {
-        width: 30%;
-      }
-
-      th:nth-child(3) {
-        width: 20%;
-      }
-
-      th:nth-child(4) {
-        width: 20%;
-      }
-    }
-  </style>
+  </script>
 </head>
 
-<body>
+<body
+  class="bg-[#f9fafb] text-gray-800 dark:bg-background dark:text-on-surface min-h-screen flex flex-col transition-colors duration-200">
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="page-header">
+  <!-- BEGIN: MainHeader -->
+  <header
+    class="bg-white dark:bg-surface-container border-b border-gray-200 dark:border-outline-variant px-6 py-4 flex items-center justify-between sticky top-0 z-20 transition-colors duration-200 shadow-sm">
+    <div class="flex items-center gap-4">
+      <div
+        class="w-10 h-10 bg-brand-50 dark:bg-primary-container/20 rounded-lg flex items-center justify-center text-brand-600 dark:text-primary transition-colors">
+        <i class="fa-regular fa-file-lines text-xl"></i>
+      </div>
       <div>
-        <h1>
-          <span class="title-icon">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="2" width="10" height="12" rx="1.5" />
-              <path d="M6 6h4M6 8.5h4M6 11h2.5" />
-            </svg>
-          </span>
-          Permit Tracker
-        </h1>
-        <p>Monitor and manage powerplant permit validity in real time</p>
+        <h1 class="text-xl font-semibold text-gray-900 dark:text-on-surface tracking-tight">Permit Tracker</h1>
+        <p class="text-sm text-gray-500 dark:text-on-surface-variant">Monitor and manage powerplant permit validity in
+          real time</p>
       </div>
-      <div class="header-actions">
-        <input type="file" id="import-file" accept=".csv,text/csv" style="display:none" onchange="importCSV(event)" />
-        <button class="btn" onclick="document.getElementById('import-file').click()">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M3 12h10M8 12V5m0 0L5.5 7.5M8 5l2.5 2.5" />
-          </svg>
-          Import CSV
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Hidden CSV file input -->
+      <input type="file" id="import-file" accept=".csv,text/csv" class="hidden" onchange="importCSV(event)" />
+
+      <button onclick="document.getElementById('import-file').click()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-on-surface dark:bg-surface-container-high dark:border-outline dark:hover:bg-surface-container-highest flex items-center gap-2 transition-all cursor-pointer shadow-sm">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i> Import CSV
+      </button>
+
+      <button onclick="exportCSV()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-on-surface dark:bg-surface-container-high dark:border-outline dark:hover:bg-surface-container-highest flex items-center gap-2 transition-all cursor-pointer shadow-sm">
+        <i class="fa-solid fa-download"></i> Export CSV
+      </button>
+
+      <button onclick="openPermitModal()"
+        class="px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-on-primary dark:bg-primary dark:hover:bg-primary/90 flex items-center gap-2 transition-all cursor-pointer shadow-sm">
+        <i class="fa-solid fa-plus"></i> Add Permit
+      </button>
+
+      <!-- Profile Avatar Button -->
+      <div class="relative ml-1">
+        <button id="profile-btn" onclick="toggleProfileModal(event)"
+          class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-surface-container-high border border-gray-200 dark:border-outline text-gray-500 dark:text-on-surface-variant hover:ring-2 hover:ring-brand-500 dark:hover:ring-primary focus:outline-none transition-all cursor-pointer"
+          aria-label="User profile menu">
+          <i class="fa-solid fa-user text-sm"></i>
         </button>
-        <button class="btn" onclick="exportCSV()">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M3 12h10M8 2v7m0 0L5.5 6.5M8 9l2.5-2.5" />
-          </svg>
-          Export CSV
-        </button>
-        <button class="btn btn-primary" onclick="addRow()">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M8 3v10M3 8h10" />
-          </svg>
-          Add Permit
+
+        <!-- Profile Dropdown Modal / Pop-up -->
+        <div id="profile-dropdown"
+          class="hidden absolute right-0 mt-3 w-72 bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-xl shadow-xl z-50 p-4 transition-all duration-200">
+
+          <!-- User info header -->
+          <div class="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-outline-variant">
+            <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-surface-container-high text-gray-500 dark:text-on-surface-variant flex items-center justify-center border border-gray-200 dark:border-outline shrink-0">
+              <i class="fa-solid fa-user text-sm"></i>
+            </div>
+            <div class="overflow-hidden">
+              <div class="text-sm font-semibold text-gray-900 dark:text-on-surface truncate">Alex Morgan</div>
+              <div class="text-xs text-gray-500 dark:text-on-surface-variant truncate">Operations & Compliance</div>
+              <div class="text-[11px] text-brand-600 dark:text-primary truncate font-mono mt-0.5">
+                alex.morgan@powercorp.ph</div>
+            </div>
+          </div>
+
+          <!-- Theme Mode Switcher -->
+          <div class="py-3.5 border-b border-gray-100 dark:border-outline-variant">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-on-surface">
+                <i class="fa-solid fa-moon text-brand-600 dark:text-primary text-sm"></i>
+                <span>Dark Mode</span>
+              </div>
+
+              <!-- Switch toggle -->
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="theme-toggle" onchange="toggleTheme()" class="sr-only peer">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-surface-container-highest peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600 dark:peer-checked:bg-primary">
+                </div>
+              </label>
+            </div>
+            <div
+              class="flex items-center justify-between text-xs text-gray-400 dark:text-on-surface-variant mt-1.5 pl-6">
+              <span>Switch appearance</span>
+              <span id="theme-status-text"
+                class="font-medium text-gray-600 dark:text-on-surface capitalize">Light</span>
+            </div>
+          </div>
+
+          <!-- Quick Actions Menu -->
+          <div class="pt-2 space-y-1">
+            <button onclick="exportCSV(); closeAllDropdowns();"
+              class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-on-surface rounded-lg hover:bg-gray-100 dark:hover:bg-surface-container-high transition-colors text-left">
+              <i class="fa-solid fa-file-export w-4 text-gray-400 dark:text-on-surface-variant"></i>
+              <span>Export All Permit Data</span>
+            </button>
+            <button onclick="openPermitModal(); closeAllDropdowns();"
+              class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-on-surface rounded-lg hover:bg-gray-100 dark:hover:bg-surface-container-high transition-colors text-left">
+              <i class="fa-solid fa-plus w-4 text-gray-400 dark:text-on-surface-variant"></i>
+              <span>Create New Permit Entry</span>
+            </button>
+            <div
+              class="pt-1 text-[11px] text-gray-400 dark:text-on-surface-variant text-center border-t border-gray-100 dark:border-outline-variant mt-2">
+              Powerplant Permit Tracker v1.2
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- END: MainHeader -->
+
+  <!-- BEGIN: MainContent -->
+  <main class="flex-1 p-6 flex flex-col lg:flex-row gap-6 max-w-[1900px] w-full mx-auto">
+
+    <!-- Left Column (Stats, Breakdown & Table) -->
+    <div class="flex-1 flex flex-col gap-6 min-w-0">
+
+      <!-- BEGIN: Stats Section -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+
+        <!-- Stat Card: Total -->
+        <div
+          class="stat-card bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-lg p-5 shadow-sm cursor-pointer transition-all hover:shadow-md"
+          data-status="all" onclick="setFilter('all')">
+          <div class="flex items-center gap-2 text-gray-500 dark:text-on-surface-variant mb-2">
+            <i class="fa-solid fa-list-ul"></i>
+            <span class="text-xs font-semibold uppercase tracking-wider">Total Permits</span>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 dark:text-on-surface" id="s-total">0</div>
+        </div>
+
+        <!-- Stat Card: Safe -->
+        <div
+          class="stat-card bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-lg p-5 shadow-sm cursor-pointer transition-all hover:shadow-md"
+          data-status="green" onclick="setFilter('green')">
+          <div class="flex items-center gap-2 text-success-500 dark:text-success mb-2">
+            <i class="fa-solid fa-check"></i>
+            <span class="text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">Safe
+              (6+ Months)</span>
+          </div>
+          <div class="text-3xl font-bold text-success-500 dark:text-success" id="s-green">0</div>
+        </div>
+
+        <!-- Stat Card: Expiring Soon -->
+        <div
+          class="stat-card bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-lg p-5 shadow-sm cursor-pointer transition-all hover:shadow-md"
+          data-status="amber" onclick="setFilter('amber')">
+          <div class="flex items-center gap-2 text-warning-500 dark:text-warning mb-2">
+            <i class="fa-regular fa-clock"></i>
+            <span
+              class="text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">Expiring
+              (3-6 Mo.)</span>
+          </div>
+          <div class="text-3xl font-bold text-warning-500 dark:text-warning" id="s-amber">0</div>
+        </div>
+
+        <!-- Stat Card: Critical -->
+        <div
+          class="stat-card bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-lg p-5 shadow-sm cursor-pointer transition-all hover:shadow-md"
+          data-status="red" onclick="setFilter('red')">
+          <div class="flex items-center gap-2 text-danger-500 dark:text-error mb-2">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span
+              class="text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">Critical/Expired</span>
+          </div>
+          <div class="text-3xl font-bold text-danger-500 dark:text-error" id="s-red">0</div>
+        </div>
+
+      </section>
+      <!-- END: Stats Section -->
+
+      <!-- BEGIN: Status Breakdown Bar -->
+      <section
+        class="bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-lg p-5 shadow-sm transition-colors">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">Status
+            Breakdown</span>
+          <span class="text-xs text-gray-400 dark:text-on-surface-variant" id="dist-total-label">0 permits</span>
+        </div>
+        <div class="h-3 w-full bg-gray-200 dark:bg-surface-container-highest rounded-full flex overflow-hidden">
+          <div id="dist-red" class="bg-danger-500 dark:bg-error h-full transition-all duration-300" style="width: 0%"
+            title="Critical / Expired"></div>
+          <div id="dist-amber" class="bg-warning-500 dark:bg-warning h-full transition-all duration-300"
+            style="width: 0%" title="Expiring Soon"></div>
+          <div id="dist-green" class="bg-success-500 dark:bg-success h-full transition-all duration-300"
+            style="width: 0%" title="Safe"></div>
+          <div id="dist-gray" class="bg-gray-300 dark:bg-outline-variant h-full transition-all duration-300"
+            style="width: 0%" title="No Date"></div>
+        </div>
+      </section>
+      <!-- END: Status Breakdown Bar -->
+
+      <!-- BEGIN: Table Section -->
+      <section
+        class="bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-lg shadow-sm flex-1 flex flex-col overflow-hidden transition-colors">
+
+        <!-- Table Controls (Filters & Search) -->
+        <div
+          class="p-4 border-b border-gray-200 dark:border-outline-variant bg-[#fbfbfa] dark:bg-surface-container-low transition-colors">
+          <div class="flex items-center gap-2 mb-4 flex-wrap">
+            <button class="filter-pill" data-status="all" onclick="setFilter('all')">
+              <div class="w-2 h-2 rounded-full bg-current"></div> All <span id="f-all">0</span>
+            </button>
+            <button class="filter-pill" data-status="red" onclick="setFilter('red')">
+              <div class="w-2 h-2 rounded-full bg-danger-500 dark:bg-error"></div> Critical / Expired <span
+                id="f-red">0</span>
+            </button>
+            <button class="filter-pill" data-status="amber" onclick="setFilter('amber')">
+              <div class="w-2 h-2 rounded-full bg-warning-500 dark:bg-warning"></div> Expiring Soon <span
+                id="f-amber">0</span>
+            </button>
+            <button class="filter-pill" data-status="green" onclick="setFilter('green')">
+              <div class="w-2 h-2 rounded-full bg-success-500 dark:bg-success"></div> Safe <span id="f-green">0</span>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div class="relative w-full max-w-sm">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-on-surface-variant">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+              </div>
+              <input id="search-input" oninput="renderTable()" type="text"
+                placeholder="Search powerplant, permit, law..."
+                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-outline-variant rounded-md leading-5 bg-white dark:bg-surface-container text-gray-900 dark:text-on-surface placeholder-gray-500 dark:placeholder-on-surface-variant focus:outline-none focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary sm:text-sm transition-colors" />
+            </div>
+            <div class="text-sm text-gray-500 dark:text-on-surface-variant" id="row-count">0 permits</div>
+          </div>
+        </div>
+
+        <!-- Table Data -->
+        <div class="overflow-x-auto flex-1">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-outline-variant">
+            <thead class="bg-[#f4f3f0] dark:bg-surface-container-low select-none transition-colors">
+              <tr>
+                <th onclick="sortBy('plant')" scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
+                  Powerplant Name <i id="sort-icon-plant" class="fa-solid fa-sort ml-1 text-gray-400"></i>
+                </th>
+                <th onclick="sortBy('environmental_law')" scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
+                  Environmental Law <i id="sort-icon-environmental_law" class="fa-solid fa-sort ml-1 text-gray-400"></i>
+                </th>
+                <th scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
+                  Description
+                </th>
+                <th onclick="sortBy('permit')" scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
+                  Permit <i id="sort-icon-permit" class="fa-solid fa-sort ml-1 text-gray-400"></i>
+                </th>
+                <th scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
+                  Unit / Coverage
+                </th>
+                <th scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
+                  Permit No.
+                </th>
+                <th onclick="sortBy('date_issued')" scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
+                  Date Issued <i id="sort-icon-date_issued" class="fa-solid fa-sort ml-1 text-gray-400"></i>
+                </th>
+                <th onclick="sortBy('expiry')" scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
+                  Expiry Date <i id="sort-icon-expiry" class="fa-solid fa-sort ml-1 text-gray-400"></i>
+                </th>
+                <th scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
+                  Remarks
+                </th>
+                <th scope="col" class="relative px-4 py-3 w-10 text-center">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="tbody"
+              class="bg-white dark:bg-surface-container divide-y divide-gray-200 dark:divide-outline-variant text-sm transition-colors">
+              <!-- Dynamically rendered rows -->
+            </tbody>
+          </table>
+
+          <!-- Empty State -->
+          <div id="empty-state" class="hidden text-center py-12 px-4">
+            <i class="fa-regular fa-folder-open text-4xl text-gray-300 dark:text-outline mb-3"></i>
+            <p id="empty-state-text" class="text-sm text-gray-500 dark:text-on-surface-variant">No permits found.</p>
+          </div>
+        </div>
+
+      </section>
+      <!-- END: Table Section -->
+
+    </div>
+
+    <!-- BEGIN: Right Sidebar -->
+    <aside
+      class="w-full lg:w-80 bg-[#fffaf5] dark:bg-surface-container border border-[#f3e8d9] dark:border-outline-variant rounded-lg p-5 shadow-sm h-fit transition-colors shrink-0">
+      <h3
+        class="text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider mb-4 flex items-center justify-between">
+        <span>Next to Expire</span>
+        <i class="fa-regular fa-clock text-gray-400"></i>
+      </h3>
+
+      <ul id="upcoming-list" class="space-y-4">
+        <!-- Upcoming items rendered dynamically -->
+      </ul>
+    </aside>
+    <!-- END: Right Sidebar -->
+
+  </main>
+  <!-- END: MainContent -->
+
+  <!-- BEGIN: Row 3-Dots Action Menu Popover -->
+  <div id="row-action-menu"
+    class="hidden fixed w-36 bg-white dark:bg-surface-container-high border border-gray-200 dark:border-outline-variant rounded-lg shadow-xl py-1 z-50 text-sm">
+    <button onclick="handleMenuEdit()"
+      class="w-full px-3 py-2 text-left text-gray-700 dark:text-on-surface hover:bg-gray-100 dark:hover:bg-surface-container-highest flex items-center gap-2.5 transition-colors cursor-pointer">
+      <i class="fa-solid fa-pen-to-square text-xs text-brand-600 dark:text-primary"></i>
+      <span>Edit Permit</span>
+    </button>
+    <button onclick="handleMenuDelete()"
+      class="w-full px-3 py-2 text-left text-danger-500 dark:text-error hover:bg-danger-50 dark:hover:bg-error/10 flex items-center gap-2.5 transition-colors cursor-pointer border-t border-gray-100 dark:border-outline-variant">
+      <i class="fa-solid fa-trash text-xs"></i>
+      <span>Delete</span>
+    </button>
+  </div>
+  <!-- END: Row 3-Dots Action Menu Popover -->
+
+  <!-- BEGIN: Add / Edit Permit Modal -->
+  <div id="permit-modal"
+    class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-xl shadow-2xl max-w-xl w-full p-6 transition-all duration-200 relative">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-outline-variant mb-5">
+        <h2 id="modal-title" class="text-lg font-semibold text-gray-900 dark:text-on-surface">Add New Permit</h2>
+        <button onclick="closePermitModal()"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-on-surface hover:bg-gray-100 dark:hover:bg-surface-container-high transition-colors">
+          <i class="fa-solid fa-xmark text-base"></i>
         </button>
       </div>
+
+      <!-- Modal Form -->
+      <form id="permit-form" onsubmit="savePermitModal(event)" class="space-y-4">
+        <input type="hidden" id="modal-row-id" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Powerplant
+              Name *</label>
+            <input id="m-plant" type="text" required placeholder="e.g. Batangas Power Corp"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none" />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Permit
+              Title *</label>
+            <input id="m-permit" type="text" required placeholder="e.g. Permit to Operate"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Environmental
+              Law</label>
+            <input id="m-environmental_law" type="text" placeholder="e.g. Philippine Clean Water Act"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none" />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Permit
+              No.</label>
+            <input id="m-permit_no" type="text" placeholder="e.g. XX-123-45-67890"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface font-mono focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Description</label>
+            <input id="m-description" type="text" placeholder="e.g. WasteWater Discharge Permit (DP)"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none" />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Unit /
+              Coverage</label>
+            <input id="m-unit_coverage" type="text" placeholder="e.g. Oil Water Separator"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Date
+              Issued</label>
+            <input id="m-date_issued" type="date"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none" />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Expiry
+              Date</label>
+            <input id="m-expiry" type="date"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label
+            class="block text-xs font-semibold text-gray-700 dark:text-on-surface mb-1 uppercase tracking-wide">Remarks</label>
+          <textarea id="m-remarks" rows="2"
+            placeholder="Optional custom remarks (leave blank to auto-generate based on expiry date)"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-outline rounded-md text-sm bg-white dark:bg-surface-container-high text-gray-900 dark:text-on-surface focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary outline-none resize-none"></textarea>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-outline-variant mt-6">
+          <button type="button" onclick="closePermitModal()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-on-surface dark:bg-surface-container-high dark:border-outline dark:hover:bg-surface-container-highest transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button type="submit"
+            class="px-5 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-on-primary dark:bg-primary dark:hover:bg-primary/90 transition-colors shadow-sm cursor-pointer">
+            Save Permit
+          </button>
+        </div>
+      </form>
+
     </div>
   </div>
-
-  <div class="page-content">
-
-    <!-- DASHBOARD: stat cards + distribution bar (left), upcoming expirations (right) -->
-    <div class="dashboard">
-      <div class="dashboard-left">
-        <div class="summary">
-          <div class="stat-card" data-status="all" onclick="setFilter('all')">
-            <span class="stat-icon">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="2" y="2" width="12" height="12" rx="2" />
-                <path d="M5 8h6M5 5.5h6M5 10.5h3.5" />
-              </svg>
-            </span>
-            <div class="stat-label">Total Permits</div>
-            <div class="stat-value" id="s-total">0</div>
-          </div>
-          <div class="stat-card" data-status="green" onclick="setFilter('green')">
-            <span class="stat-icon">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M3 8.5l3 3 7-7" />
-              </svg>
-            </span>
-            <div class="stat-label">Safe (6+ months)</div>
-            <div class="stat-value green" id="s-green">0</div>
-          </div>
-          <div class="stat-card" data-status="amber" onclick="setFilter('amber')">
-            <span class="stat-icon">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="8" cy="8" r="6" />
-                <path d="M8 5v3.3l2 1.7" />
-              </svg>
-            </span>
-            <div class="stat-label">Expiring (3–6 mo.)</div>
-            <div class="stat-value amber" id="s-amber">0</div>
-          </div>
-          <div class="stat-card" data-status="red" onclick="setFilter('red')">
-            <span class="stat-icon">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M8 2l6.9 12H1.1L8 2z" />
-                <path d="M8 6.3v3.4" />
-                <circle cx="8" cy="11.8" r="0.4" fill="currentColor" />
-              </svg>
-            </span>
-            <div class="stat-label">Critical/Expired</div>
-            <div class="stat-value red" id="s-red">0</div>
-          </div>
-        </div>
-
-        <div class="distribution-card">
-          <div class="distribution-label-row">
-            <span>Status Breakdown</span>
-            <span id="dist-total-label">0 permits</span>
-          </div>
-          <div class="distribution-bar">
-            <div class="dist-segment dist-red" id="dist-red" style="width:0%"></div>
-            <div class="dist-segment dist-amber" id="dist-amber" style="width:0%"></div>
-            <div class="dist-segment dist-green" id="dist-green" style="width:0%"></div>
-            <div class="dist-segment dist-gray" id="dist-gray" style="width:0%"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="upcoming-panel">
-        <div class="upcoming-header">Next to Expire</div>
-        <div class="upcoming-list" id="upcoming-list"></div>
-      </div>
-    </div>
-
-    <!-- TABLE CARD -->
-    <div class="table-card">
-      <div class="filter-bar" id="filter-bar">
-        <button class="filter-pill" data-status="all" onclick="setFilter('all')">
-          <span class="filter-dot"></span> All <span class="filter-count" id="f-all">0</span>
-        </button>
-        <button class="filter-pill" data-status="red" onclick="setFilter('red')">
-          <span class="filter-dot"></span> Critical / Expired <span class="filter-count" id="f-red">0</span>
-        </button>
-        <button class="filter-pill" data-status="amber" onclick="setFilter('amber')">
-          <span class="filter-dot"></span> Expiring Soon <span class="filter-count" id="f-amber">0</span>
-        </button>
-        <button class="filter-pill" data-status="green" onclick="setFilter('green')">
-          <span class="filter-dot"></span> Safe <span class="filter-count" id="f-green">0</span>
-        </button>
-      </div>
-      <div class="toolbar">
-        <div class="search-wrap">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="7" cy="7" r="4.5" />
-            <path d="M10.5 10.5L13 13" />
-          </svg>
-          <input type="text" id="search-input" placeholder="Search permits..." oninput="renderTable()" />
-        </div>
-        <span style="font-size:12px; color:var(--text-muted);" id="row-count"></span>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th class="sortable" onclick="sortBy('plant')" id="th-plant">
-              Powerplant Name <span class="sort-icon"></span>
-            </th>
-            <th class="sortable empty-state" onclick="sortBy('environmental_law')" id="th-environmental_law">
-              Environmental Law <span class="sort-icon"></span>
-            </th>
-            <th class="empty-state" id="th-description">
-              Description
-            </th>
-            <th class="sortable" onclick="sortBy('permit')" id="th-permit">
-              Permit <span class="sort-icon"></span>
-            </th>
-            <th class="empty-state" id="th-unit/coverage">
-              Unit / Coverage
-            </th>
-            <th class="empty-state" id="th-permit-no">
-              Permit No.
-            </th>
-            <th class="sortable" onclick="sortBy('date_issued')" id="th-date_issued">
-              Date Issued <span class="sort-icon"></span>
-            </th>
-            <th class="sortable" onclick="sortBy('expiry')" id="th-expiry">
-              Expiry Date <span class="sort-icon"></span>
-            </th>
-            <th>Status</th>
-            <th>Remarks</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-      <div class="empty-state" id="empty-state" style="display:none;">
-        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="6" y="4" width="28" height="32" rx="3" />
-          <path d="M13 14h14M13 20h14M13 26h8" />
-        </svg>
-        <p>No permits yet — click <strong>Add Permit</strong> to get started.</p>
-      </div>
-    </div>
-
-    <!-- LEGEND -->
-    <div class="legend">
-      <div class="legend-item"><span class="legend-dot" style="background:#4E9A1A;"></span> 6+ months remaining</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#C98A10;"></span> 3–6 months remaining</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#D63B37;"></span> Under 3 months / expired
-      </div>
-    </div>
-
-  </div><!-- /.page-content -->
-
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
-  <script>
-    const STORAGE_KEY = 'permit_tracker_v1';
-    let rows = []; //rows of input
-    let nextId = 1; //for generating unique IDs for rows
-    let sortDir = 'asc';
-    let sortField = 'expiry';
-    let statusFilter = 'all'; // 'all' | 'red' | 'amber' | 'green'
-
-    function setFilter(status) {
-      statusFilter = status;
-      renderTable();
-    }
-
-    function loadData() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY); //get saved data from localStorage
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          rows = parsed.rows || [];
-          nextId = parsed.nextId || 1;
-
-          // Backfill new per-row flags/fields for existing localStorage data
-          rows.forEach(r => {
-            if (r.remarksAuto === undefined) {
-              // If remarks are empty/missing, treat it as "auto" until user edits.
-              // If remarks already has content, assume the user manually set it.
-              const remarksStr = (r.remarks ?? '');
-              r.remarksAuto = (String(remarksStr).trim() === '') ? true : false;
-            }
-          });
-        }
-      }
-      catch (e) {
-        console.error('Error loading data from localStorage:', e);
-      }
-    }
-
-    function saveData() {
-      try {
-        const data = { rows, nextId };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); //save current data to local
-      } catch (e) {
-        console.error('Error saving data to localStorage:', e);
-
-      }
-    }
-
-    function addRow() {
-      // Keep row shape consistent with the UI + export expectations
-      rows.push({
-        id: nextId++,
-        plant: '',
-        environmental_law: '',
-        description: '',
-        permit: '',
-        unit_coverage: '',
-        permit_no: '',
-        date_issued: '',
-        expiry: '',
-        remarks: '',
-        remarksAuto: true // auto-fill remarks when expiry is first set; stop auto-fill after user edits
-      }); //add new row with unique ID & blank fields
-      saveData();
-      renderTable();
-
-      setTimeout(() => {
-        const inputs = document.querySelectorAll('#tbody tr:last-child input');
-        if (inputs[0]) inputs[0].focus(); //focus first input of new row
-      }, 50);
-    }
-
-    function deleteRow(id) {
-      rows = rows.filter(r => r.id !== id); //remove row with matching ID
-      saveData();
-      renderTable();
-      showToast('Permit removed');
-    }
-
-    function updateField(id, field, value) {
-      const row = rows.find(r => r.id === id);
-      if (row) {
-        // Remarks: user edits should override auto-fill permanently for that row
-        if (field === 'remarks') {
-          row.remarks = value;
-          row.remarksAuto = false;
-        } else {
-          row[field] = value; //update specific field of the row
-
-          // When expiry is first set, auto-fill remarks; keep auto-fill only if user hasn't overridden it.
-          if (field === 'expiry') {
-            if (value) {
-              if (row.remarksAuto !== false) {
-                row.remarksAuto = true;
-                row.remarks = getRemarks(getMonthsDiff(value));
-              }
-            } else {
-              // If expiry is cleared, reset to auto mode.
-              row.remarksAuto = true;
-              row.remarks = '';
-            }
-          }
-        }
-
-        saveData();
-
-        // Avoid clobbering active edits (e.g. remarks textarea) by re-rendering
-        // the whole table on every field change. Only re-render when derived UI
-        // (status/auto-remarks) or ordering/search could change.
-        const shouldRerender =
-          field === 'expiry' ||
-          field === sortField ||
-          field === 'plant' ||
-          field === 'permit';
-
-        if (shouldRerender) renderTable();
-      }
-    }
-
-    // Business Logic
-    function getMonthsDiff(expiryDateStr) {
-      if (!expiryDateStr) return null;
-      const now = new Date();
-      now.setHours(0, 0, 0, 0); //normalize to start of day
-      const exp = new Date(expiryDateStr);
-
-      return (exp - now) / (1000 * 60 * 60 * 24 * 30.4375); //convert ms to months
-    }
-
-    function getStatus(months) {
-      if (months == null) return 'gray';
-      if (months < 0) return 'red';
-      if (months < 3) return 'red';
-      if (months < 6) return 'amber';
-      return 'green';
-    }
-
-    function getRemarks(months) {
-      if (months == null) return 'Set a date';
-
-      const totalDays = Math.round(Math.abs(months) * 30.4375); //total days until/since expiry
-
-      if (months < 0) {
-        return `Expired ${totalDays} day${totalDays !== 1 ? 's' : ''} ago`;
-      }
-
-      const m = Math.floor(months);
-      const d = totalDays - (m * 30);
-
-      if (m === 0) return `Expiring in ${totalDays} day${totalDays !== 1 ? 's' : ''}`;
-      if (d <= 0) return `Expiring in ${m} month${m !== 1 ? 's' : ''}`;
-      return `Expiring in ${m} mo. ${d} day${d !== 1 ? 's' : ''}`;
-    }
-
-    function getStatusMeta(status) {
-      return {
-        green: { label: 'Safe', code: '[GREEN]' },
-        amber: { label: 'Expiring Soon', code: '[ORANGE]' },
-        red: { label: 'Critical/Expired', code: '[RED]' },
-        gray: { label: 'No Date', code: '[GRAY]' }
-      }[status] || { label: 'No Date', code: '[GRAY]' };
-    }
-
-    // Sorting & Filtering
-    function sortBy(field) {
-      if (sortField === field) {
-        sortDir = sortDir === 'asc' ? 'desc' : 'asc'; //flip direction if same field
-      } else {
-        sortField = field;
-        sortDir = 'asc';
-      }
-      renderTable();
-    }
-
-    function getSortedRows(data) {
-      return [...data].sort((a, b) => {
-        //Sorted fields
-        let av = a[sortField] || '';
-        let bv = b[sortField] || '';
-
-        // Sort by date
-        if (sortField === 'expiry' || sortField === 'date_issued') {
-          av = av ? new Date(av).getTime() : Infinity;
-          bv = bv ? new Date(bv).getTime() : Infinity;
-          return sortDir === 'asc' ? av - bv : bv - av;
-        }
-
-        // Sort by name
-        return sortDir === 'asc'
-          ? av.localeCompare(bv)
-          : bv.localeCompare(av);
-      });
-    }
-
-    function updateSortHeaders() {
-      ['plant', 'environmental_law', 'permit', 'date_issued', 'expiry'].forEach(f => {
-        const th = document.getElementById('th-' + f);
-        th.classList.remove('sort-asc', 'sort-desc');
-        if (sortField === f) th.classList.add('sort-' + sortDir);
-      });
-    }
-
-    // Render
-    function renderTable() {
-      // search algorithm - filter rows based on search query matching plant or permit fields
-      const query = (document.getElementById('search-input').value || '').toLowerCase();
-      let filtered = rows.filter(r => !query ||
-        (r.plant || '').toLowerCase().includes(query) ||
-        (r.permit || '').toLowerCase().includes(query)
-      )
-
-      // apply status filter (All / Critical-Expired / Expiring Soon / Safe)
-      if (statusFilter !== 'all') {
-        filtered = filtered.filter(r => getStatus(getMonthsDiff(r.expiry)) === statusFilter);
-      }
-
-      const sorted = getSortedRows(filtered); //sort filtered results
-
-      const tbody = document.getElementById('tbody');
-      const emptyState = document.getElementById('empty-state');
-      const emptyStateText = emptyState.querySelector('p');
-
-      // empty state: no permits at all vs. none matching the current filter/search
-      if (rows.length === 0) {
-        emptyStateText.innerHTML = 'No permits yet — click <strong>Add Permit</strong> to get started.';
-        emptyState.style.display = 'block';
-      } else if (sorted.length === 0) {
-        emptyStateText.textContent = 'No permits match this filter.';
-        emptyState.style.display = 'block';
-      } else {
-        emptyState.style.display = 'none';
-      }
-
-      tbody.innerHTML = '';
-
-      let counts = { green: 0, amber: 0, red: 0 }; //counters for summary cards
-      rows.forEach(r => {
-        const s = getStatus(getMonthsDiff(r.expiry));
-        if (s !== 'gray') counts[s]++;
-      })
-
-      // Build each row
-      sorted.forEach(row => {
-        const months = getMonthsDiff(row.expiry);
-        const status = getStatus(months);
-        const autoRemarks = getRemarks(months);
-        // If the user has overridden remarks, show their text; otherwise show the auto text.
-        const remarksText = (row.remarksAuto === false) ? (row.remarks ?? '') : autoRemarks;
-
-        const tr = document.createElement('tr');
-        tr.dataset.id = row.id;
-
-        tr.innerHTML = `
-          <td>
-            <input type="text" placeholder="Marinduque Powerplant" 
-            value="${esc(row.plant)}" 
-            onchange="updateField(${row.id},'plant', this.value)" />
-          </td>
-          <td>
-            <textarea placeholder="Philippine Clean Air Act of 2004"
-            onchange="updateField(${row.id},'environmental_law', this.value)">${esc(row.environmental_law)}</textarea>
-          </td>
-          <td>
-            <textarea placeholder="WasteWater Discharge Permit (DP)"
-            onchange="updateField(${row.id},'description', this.value)">${esc(row.description)}</textarea>
-          </td>
-          <td>
-            <input type="text" placeholder="Permit to Operate"
-            value="${esc(row.permit)}"
-            onchange="updateField(${row.id},'permit', this.value)" />
-          </td>
-          <td>
-            <textarea placeholder="Oil Water Separator"
-            onchange="updateField(${row.id},'unit_coverage', this.value)">${esc(row.unit_coverage)}</textarea>
-          </td>
-          <td>
-            <input type="text" placeholder="XX-123-45-67890"
-            value="${esc(row.permit_no)}"
-            onchange="updateField(${row.id},'permit_no', this.value)" />
-          </td>
-          <td>
-            <input type="date"
-            value="${esc(row.date_issued)}"
-            onchange="updateField(${row.id},'date_issued', this.value)" />
-          </td>
-          <td>
-            <input type="date"
-            value="${esc(row.expiry)}"
-            onchange="updateField(${row.id}, 'expiry', this.value)" />
-          </td>
-          <td>
-            <span class="badge badge-${status}">
-              <span class="badge-dot"></span>
-              ${getStatusMeta(status).label}
-            </span>
-          </td>
-          <td>
-            <textarea placeholder="Remarks"
-            onchange="updateField(${row.id}, 'remarks', this.value)">${esc(remarksText)}</textarea>
-          </td>
-          <td>
-            <button class="del-btn" onclick="deleteRow(${row.id})" title="Remove permit">×</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      document.getElementById('s-total').textContent = rows.length;
-      document.getElementById('s-green').textContent = counts.green;
-      document.getElementById('s-amber').textContent = counts.amber;
-      document.getElementById('s-red').textContent = counts.red;
-
-      // filter pill counts (always reflect the full, unfiltered row set)
-      document.getElementById('f-all').textContent = rows.length;
-      document.getElementById('f-red').textContent = counts.red;
-      document.getElementById('f-amber').textContent = counts.amber;
-      document.getElementById('f-green').textContent = counts.green;
-      updateFilterPills();
-      updateDashboard(counts);
-
-      const isFiltered = query || statusFilter !== 'all';
-      document.getElementById('row-count').textContent =
-        isFiltered ? `${sorted.length} of ${rows.length} permit${rows.length !== 1 ? 's' : ''}` :
-          `${rows.length} permit${rows.length !== 1 ? 's' : ''}`;
-
-      updateSortHeaders();
-    }
-
-    function updateFilterPills() {
-      document.querySelectorAll('.filter-pill').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.status === statusFilter);
-      });
-      document.querySelectorAll('.stat-card').forEach(card => {
-        card.classList.toggle('active', card.dataset.status === statusFilter);
-      });
-    }
-
-    // Updates the status-distribution bar and the "Next to Expire" panel.
-    // Both are always based on the full row set, independent of search/filter.
-    function updateDashboard(counts) {
-      const total = rows.length;
-      const grayCount = Math.max(0, total - counts.green - counts.amber - counts.red);
-
-      document.getElementById('dist-total-label').textContent =
-        `${total} permit${total !== 1 ? 's' : ''}`;
-
-      const segments = [
-        ['dist-red', counts.red],
-        ['dist-amber', counts.amber],
-        ['dist-green', counts.green],
-        ['dist-gray', grayCount]
-      ];
-      segments.forEach(([id, val]) => {
-        const pct = total > 0 ? (val / total * 100) : 0;
-        document.getElementById(id).style.width = pct + '%';
-      });
-
-      // Nearest 5 permits by expiry date (overdue ones included, sorted soonest first).
-      const upcoming = rows
-        .filter(r => r.expiry)
-        .map(r => ({ row: r, months: getMonthsDiff(r.expiry) }))
-        .sort((a, b) => new Date(a.row.expiry) - new Date(b.row.expiry))
-        .slice(0, 5);
-
-      const list = document.getElementById('upcoming-list');
-      if (upcoming.length === 0) {
-        list.innerHTML = '<div class="upcoming-empty">No permits with expiry dates yet.</div>';
-        return;
-      }
-
-      list.innerHTML = upcoming.map(({ row: r, months }) => {
-        const status = getStatus(months);
-        const days = Math.round(months * 30.4375);
-        const dayLabel = days < 0 ? `${Math.abs(days)}d overdue` : `${days}d left`;
-        const pillClass = status === 'red' ? 'red' : status === 'amber' ? 'amber' : 'green';
-        const name = r.plant && r.plant.trim() ? r.plant : 'Untitled permit';
-        return `
-          <div class="upcoming-item" onclick="setFilter('${status}')" title="${esc(name)}">
-            <span class="upcoming-item-name">${esc(name)}</span>
-            <span class="upcoming-item-days ${pillClass}">${dayLabel}</span>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function exportCSV() {
-      if (rows.length === 0) { showToast('Nothing to export'); return; }
-
-      const headers = ['Powerplant Name', 'Environmental Law', 'Description', 'Permit', 'Unit / Coverage', 'Permit no.', 'Date Issued', 'Expiry Date', 'Status', 'Remarks'];
-      const csvRows = rows.map(r => {
-        const months = getMonthsDiff(r.expiry);
-        const autoRemarks = getRemarks(months);
-        const remarks = (r.remarksAuto === false) ? (r.remarks ?? '') : autoRemarks;
-        const status = getStatus(months);
-        const statusMeta = getStatusMeta(status);
-        const remarksWithCode = `${statusMeta.code} ${remarks}`;
-        return [r.plant, r.environmental_law, r.description, r.permit, r.unit_coverage, r.permit_no, r.date_issued, r.expiry, statusMeta.label, remarksWithCode]
-          .map(v => `"${(v || '').replace(/"/g, '""')}"`).join(',');
-      });
-
-      const csv = [headers.join(','), ...csvRows].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `permits_${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('CSV exported');
-    }
-
-    // Parses raw CSV text into a 2D array of rows/fields.
-    // Handles quoted fields, escaped "" quotes, and quoted newlines (RFC 4180-ish).
-    function parseCSVText(text) {
-      const table = [];
-      let row = [];
-      let field = '';
-      let inQuotes = false;
-      const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
-      for (let i = 0; i < normalized.length; i++) {
-        const c = normalized[i];
-        if (inQuotes) {
-          if (c === '"') {
-            if (normalized[i + 1] === '"') { field += '"'; i++; } // escaped quote
-            else { inQuotes = false; }
-          } else {
-            field += c;
-          }
-        } else if (c === '"') {
-          inQuotes = true;
-        } else if (c === ',') {
-          row.push(field); field = '';
-        } else if (c === '\n') {
-          row.push(field); table.push(row); row = []; field = '';
-        } else {
-          field += c;
-        }
-      }
-      if (field.length > 0 || row.length > 0) { row.push(field); table.push(row); }
-      return table;
-    }
-
-    // Accepts 'YYYY-MM-DD' as-is; otherwise tries to parse common date formats
-    // (e.g. from a spreadsheet edit) and reformats to the <input type="date"> shape.
-    function normalizeDateStr(str) {
-      const s = (str || '').trim();
-      if (!s) return '';
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-      const d = new Date(s);
-      if (isNaN(d.getTime())) return '';
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const dd = String(d.getDate()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd}`;
-    }
-
-    function importCSV(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          const table = parseCSVText(String(e.target.result));
-          if (table.length < 2) { showToast('CSV has no data rows'); return; }
-
-          const header = table[0].map(h => h.trim().toLowerCase());
-          const colIndex = name => header.indexOf(name);
-          const col = {
-            plant: colIndex('powerplant name'),
-            environmental_law: colIndex('environmental law'),
-            description: colIndex('description'),
-            permit: colIndex('permit'),
-            unit_coverage: colIndex('unit / coverage'),
-            permit_no: colIndex('permit no.'),
-            date_issued: colIndex('date issued'),
-            expiry: colIndex('expiry date'),
-            remarks: colIndex('remarks')
-          };
-
-          // require at least a plant or permit column to trust this is the right format
-          if (col.plant === -1 && col.permit === -1) {
-            showToast("CSV headers don't match the expected export format");
-            return;
-          }
-
-          const get = (r, key) => col[key] > -1 ? (r[col[key]] || '').trim() : '';
-          let imported = 0;
-
-          for (let i = 1; i < table.length; i++) {
-            const r = table[i];
-            if (!r || r.every(c => (c || '').trim() === '')) continue; // skip blank lines
-
-            const expiry = normalizeDateStr(get(r, 'expiry'));
-            const date_issued = normalizeDateStr(get(r, 'date_issued'));
-
-            // strip the leading [GREEN]/[ORANGE]/[RED]/[GRAY] status code our export adds
-            let remarks = get(r, 'remarks').replace(/^\[(GREEN|ORANGE|RED|GRAY)\]\s*/i, '');
-            const autoText = getRemarks(getMonthsDiff(expiry));
-            // if remarks are blank or match what we'd auto-generate, keep it in auto mode
-            const remarksAuto = (remarks === '' || remarks === autoText);
-
-            rows.push({
-              id: nextId++,
-              plant: get(r, 'plant'),
-              environmental_law: get(r, 'environmental_law'),
-              description: get(r, 'description'),
-              permit: get(r, 'permit'),
-              unit_coverage: get(r, 'unit_coverage'),
-              permit_no: get(r, 'permit_no'),
-              date_issued,
-              expiry,
-              remarks: remarksAuto ? autoText : remarks,
-              remarksAuto
-            });
-            imported++;
-          }
-
-          if (imported === 0) {
-            showToast('No permit rows found in that file');
-            return;
-          }
-
-          saveData();
-          renderTable();
-          showToast(`Imported ${imported} permit${imported !== 1 ? 's' : ''}`);
-        } catch (err) {
-          console.error('Error importing CSV:', err);
-          showToast('Failed to import CSV');
-        } finally {
-          event.target.value = ''; // reset so re-selecting the same file re-fires onchange
-        }
-      };
-      reader.onerror = () => showToast('Could not read that file');
-      reader.readAsText(file);
-    }
-
-    // utility
-    function esc(str) {
-      return (str || '').replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-    }
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2200);
-    }
-
-    // init
-    loadData();
-    if (rows.length === 0) addRow(); //start with one blank row if no data
-    else renderTable();
-  </script>
+  <!-- END: Add / Edit Permit Modal -->
+
+  <!-- Toast Notification -->
+  <div id="toast"
+    class="fixed bottom-6 right-6 bg-gray-900 dark:bg-surface-container-highest text-white dark:text-on-surface text-sm px-4 py-2.5 rounded-lg shadow-xl border border-transparent dark:border-outline opacity-0 translate-y-4 transition-all duration-300 pointer-events-none z-50 flex items-center gap-2">
+  </div>
+
+  <!-- Load Application Javascript -->
+  <script src="app.js"></script>
 
 </body>
 
