@@ -7,6 +7,8 @@ import { TableControls } from './components/TableControls';
 import { PermitTable } from './components/PermitTable';
 import { NextToExpireSidebar } from './components/NextToExpireSidebar';
 import { PermitModal } from './components/PermitModal';
+import { RemarksModal } from './components/RemarksModal';
+import { SortModal } from './components/SortModal';
 import { Toast } from './components/Toast';
 import { exportPermitsToCSV } from './utils/csvUtils';
 import { Permit } from './types/permit';
@@ -23,7 +25,7 @@ export const App: React.FC = () => {
     setStatusFilter,
     sortField,
     sortDir,
-    toggleSort,
+    setSort,
     addPermit,
     updatePermit,
     deletePermit,
@@ -37,6 +39,16 @@ export const App: React.FC = () => {
     isOpen: false,
     permit: null,
   });
+
+  const [remarksModalState, setRemarksModalState] = useState<{
+    isOpen: boolean;
+    permit: Permit | null;
+  }>({
+    isOpen: false,
+    permit: null,
+  });
+
+  const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -52,11 +64,20 @@ export const App: React.FC = () => {
   };
 
   const handleOpenEditModal = (permit: Permit) => {
+    setRemarksModalState({ isOpen: false, permit: null });
     setModalState({ isOpen: true, permit });
   };
 
   const handleCloseModal = () => {
     setModalState({ isOpen: false, permit: null });
+  };
+
+  const handleViewRemarks = (permit: Permit) => {
+    setRemarksModalState({ isOpen: true, permit });
+  };
+
+  const handleCloseRemarksModal = () => {
+    setRemarksModalState({ isOpen: false, permit: null });
   };
 
   const handleSavePermit = (data: Omit<Permit, 'id'>) => {
@@ -136,6 +157,9 @@ export const App: React.FC = () => {
               onSearchChange={setSearchQuery}
               statusFilter={statusFilter}
               onStatusFilterChange={setStatusFilter}
+              sortField={sortField}
+              sortDir={sortDir}
+              onOpenSortModal={() => setIsSortModalOpen(true)}
               counts={statusCounts}
               totalFiltered={filteredPermits.length}
             />
@@ -143,10 +167,7 @@ export const App: React.FC = () => {
             {/* Main Table */}
             <PermitTable
               permits={filteredPermits}
-              sortField={sortField}
-              sortDir={sortDir}
-              onSort={toggleSort}
-              onEditPermit={handleOpenEditModal}
+              onViewRemarks={handleViewRemarks}
               onDeletePermit={handleDeletePermit}
               onOpenAddModal={handleOpenAddModal}
             />
@@ -159,6 +180,23 @@ export const App: React.FC = () => {
           onSelectFilter={setStatusFilter}
         />
       </main>
+
+      {/* Sort Configuration Modal */}
+      <SortModal
+        isOpen={isSortModalOpen}
+        sortField={sortField}
+        sortDir={sortDir}
+        onSortChange={setSort}
+        onClose={() => setIsSortModalOpen(false)}
+      />
+
+      {/* Remarks / Details Modal */}
+      <RemarksModal
+        isOpen={remarksModalState.isOpen}
+        permit={remarksModalState.permit}
+        onClose={handleCloseRemarksModal}
+        onEdit={handleOpenEditModal}
+      />
 
       {/* Add / Edit Modal */}
       <PermitModal

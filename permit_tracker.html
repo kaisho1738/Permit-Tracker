@@ -121,7 +121,8 @@
 
           <!-- User info header -->
           <div class="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-outline-variant">
-            <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-surface-container-high text-gray-500 dark:text-on-surface-variant flex items-center justify-center border border-gray-200 dark:border-outline shrink-0">
+            <div
+              class="w-10 h-10 rounded-full bg-gray-100 dark:bg-surface-container-high text-gray-500 dark:text-on-surface-variant flex items-center justify-center border border-gray-200 dark:border-outline shrink-0">
               <i class="fa-solid fa-user text-sm"></i>
             </div>
             <div class="overflow-hidden">
@@ -285,67 +286,79 @@
             </button>
           </div>
 
-          <div class="flex items-center justify-between gap-4 flex-wrap">
-            <div class="relative w-full max-w-sm">
-              <div
-                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-on-surface-variant">
-                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-3 flex-1 min-w-[280px] max-w-2xl flex-wrap sm:flex-nowrap">
+              <!-- Search Bar -->
+              <div class="relative flex-1 min-w-[200px]">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-on-surface-variant">
+                  <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </div>
+                <input id="search-input" oninput="renderTable()" type="text"
+                  placeholder="Search powerplant, permit, law..."
+                  class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-outline-variant rounded-md leading-5 bg-white dark:bg-surface-container text-gray-900 dark:text-on-surface placeholder-gray-500 dark:placeholder-on-surface-variant focus:outline-none focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary sm:text-sm transition-colors" />
               </div>
-              <input id="search-input" oninput="renderTable()" type="text"
-                placeholder="Search powerplant, permit, law..."
-                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-outline-variant rounded-md leading-5 bg-white dark:bg-surface-container text-gray-900 dark:text-on-surface placeholder-gray-500 dark:placeholder-on-surface-variant focus:outline-none focus:ring-1 focus:ring-brand-500 dark:focus:ring-primary focus:border-brand-500 dark:focus:border-primary sm:text-sm transition-colors" />
+
+              <!-- Sort Modal Button Beside Search Bar -->
+              <button type="button" onclick="openSortModal()"
+                class="flex items-center gap-2 bg-white dark:bg-surface-container border border-gray-300 dark:border-outline-variant hover:bg-gray-50 dark:hover:bg-surface-container-high text-gray-800 dark:text-on-surface rounded-md px-3.5 py-2 shrink-0 shadow-xs transition-colors cursor-pointer"
+                title="Open Sort Settings">
+                <i class="fa-solid fa-sliders text-brand-600 dark:text-primary"></i>
+                <div class="flex items-center gap-1 text-sm font-medium">
+                  <span class="text-gray-500 dark:text-on-surface-variant">Sort:</span>
+                  <span id="sort-label-name" class="font-semibold text-gray-900 dark:text-on-surface">Expiry Date</span>
+                  <span id="sort-label-dir" class="text-xs text-brand-600 dark:text-primary font-mono bg-brand-50 dark:bg-primary-container/20 px-1.5 py-0.5 rounded">Earliest</span>
+                </div>
+              </button>
             </div>
-            <div class="text-sm text-gray-500 dark:text-on-surface-variant" id="row-count">0 permits</div>
+
+            <div class="text-sm text-gray-500 dark:text-on-surface-variant font-mono" id="row-count">0 permits</div>
           </div>
         </div>
 
         <!-- Table Data -->
         <div class="overflow-x-auto flex-1">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-outline-variant">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-outline-variant text-sm">
             <thead class="bg-[#f4f3f0] dark:bg-surface-container-low select-none transition-colors">
               <tr>
-                <th onclick="sortBy('plant')" scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
-                  Powerplant Name <i id="sort-icon-plant" class="fa-solid fa-sort ml-1 text-gray-400"></i>
-                </th>
-                <th onclick="sortBy('environmental_law')" scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
-                  Environmental Law <i id="sort-icon-environmental_law" class="fa-solid fa-sort ml-1 text-gray-400"></i>
+                <th scope="col"
+                  class="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
+                  Powerplant Name
                 </th>
                 <th scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
+                  class="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
+                  Environmental Law
+                </th>
+                <th scope="col"
+                  class="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
                   Description
                 </th>
-                <th onclick="sortBy('permit')" scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
-                  Permit <i id="sort-icon-permit" class="fa-solid fa-sort ml-1 text-gray-400"></i>
+                <th scope="col"
+                  class="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
+                  Permit
                 </th>
                 <th scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
+                  class="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
                   Unit / Coverage
                 </th>
                 <th scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
+                  class="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
                   Permit No.
                 </th>
-                <th onclick="sortBy('date_issued')" scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
-                  Date Issued <i id="sort-icon-date_issued" class="fa-solid fa-sort ml-1 text-gray-400"></i>
-                </th>
-                <th onclick="sortBy('expiry')" scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap cursor-pointer hover:text-gray-900 dark:hover:text-on-surface">
-                  Expiry Date <i id="sort-icon-expiry" class="fa-solid fa-sort ml-1 text-gray-400"></i>
+                <th scope="col"
+                  class="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
+                  Date Issued
                 </th>
                 <th scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
+                  class="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
+                  Expiry Date
+                </th>
+                <th scope="col"
+                  class="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap">
                   Status
                 </th>
-                <th scope="col"
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-on-surface-variant uppercase tracking-wider">
-                  Remarks
-                </th>
-                <th scope="col" class="relative px-4 py-3 w-10 text-center">
-                  <span class="sr-only">Actions</span>
+                <th scope="col" class="relative px-3.5 py-3 w-10 text-center">
+                  <span class="sr-only">Delete</span>
                 </th>
               </tr>
             </thead>
@@ -369,7 +382,7 @@
 
     <!-- BEGIN: Right Sidebar -->
     <aside
-      class="w-full lg:w-80 bg-[#fffaf5] dark:bg-surface-container border border-[#f3e8d9] dark:border-outline-variant rounded-lg p-5 shadow-sm h-fit transition-colors shrink-0">
+      class="w-full lg:w-72 xl:w-80 bg-[#fffaf5] dark:bg-surface-container border border-[#f3e8d9] dark:border-outline-variant rounded-lg p-4 sm:p-5 shadow-sm h-fit transition-colors shrink-0">
       <h3
         class="text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider mb-4 flex items-center justify-between">
         <span>Next to Expire</span>
@@ -387,9 +400,14 @@
 
   <!-- BEGIN: Row 3-Dots Action Menu Popover -->
   <div id="row-action-menu"
-    class="hidden fixed w-36 bg-white dark:bg-surface-container-high border border-gray-200 dark:border-outline-variant rounded-lg shadow-xl py-1 z-50 text-sm">
-    <button onclick="handleMenuEdit()"
+    class="hidden fixed w-40 bg-white dark:bg-surface-container-high border border-gray-200 dark:border-outline-variant rounded-lg shadow-xl py-1 z-50 text-sm">
+    <button onclick="handleMenuViewRemarks()"
       class="w-full px-3 py-2 text-left text-gray-700 dark:text-on-surface hover:bg-gray-100 dark:hover:bg-surface-container-highest flex items-center gap-2.5 transition-colors cursor-pointer">
+      <i class="fa-regular fa-comment-dots text-xs text-brand-600 dark:text-primary"></i>
+      <span>View Remarks</span>
+    </button>
+    <button onclick="handleMenuEdit()"
+      class="w-full px-3 py-2 text-left text-gray-700 dark:text-on-surface hover:bg-gray-100 dark:hover:bg-surface-container-highest flex items-center gap-2.5 transition-colors cursor-pointer border-t border-gray-50 dark:border-outline-variant/30">
       <i class="fa-solid fa-pen-to-square text-xs text-brand-600 dark:text-primary"></i>
       <span>Edit Permit</span>
     </button>
@@ -400,6 +418,230 @@
     </button>
   </div>
   <!-- END: Row 3-Dots Action Menu Popover -->
+
+  <!-- BEGIN: Remarks & Details Modal -->
+  <div id="remarks-modal"
+    class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-xl shadow-2xl max-w-lg w-full p-6 transition-all duration-200 relative text-gray-900 dark:text-on-surface">
+
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between pb-4 border-b border-gray-100 dark:border-outline-variant">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="rm-status-badge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"></span>
+            <span id="rm-custom-tag" class="hidden text-[11px] font-medium text-gray-500 dark:text-on-surface-variant bg-gray-100 dark:bg-surface-container-high px-2 py-0.5 rounded-full">Custom Remark</span>
+          </div>
+          <h2 id="rm-plant" class="text-xl font-bold text-gray-900 dark:text-on-surface"></h2>
+          <p id="rm-permit" class="text-sm font-medium text-brand-600 dark:text-primary mt-0.5"></p>
+        </div>
+        <button onclick="closeRemarksModal()"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-on-surface hover:bg-gray-100 dark:hover:bg-surface-container-high transition-colors cursor-pointer">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <!-- Remarks Box -->
+      <div class="my-5 p-4 rounded-xl bg-[#faf9f6] dark:bg-surface-container-high border border-gray-200/80 dark:border-outline-variant/60">
+        <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-on-surface-variant mb-2">
+          <i class="fa-regular fa-comment-dots text-brand-600 dark:text-primary"></i>
+          <span>Remarks</span>
+        </div>
+        <p id="rm-remarks-text" class="text-base text-gray-800 dark:text-on-surface font-medium leading-relaxed"></p>
+      </div>
+
+      <!-- Permit Details Grid -->
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div class="p-3 bg-gray-50 dark:bg-surface-container-low rounded-lg border border-gray-100 dark:border-outline-variant/40">
+          <div class="text-xs text-gray-500 dark:text-on-surface-variant font-medium mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-shield-halved text-xs"></i> Environmental Law
+          </div>
+          <div id="rm-environmental_law" class="font-semibold text-gray-900 dark:text-on-surface truncate"></div>
+        </div>
+
+        <div class="p-3 bg-gray-50 dark:bg-surface-container-low rounded-lg border border-gray-100 dark:border-outline-variant/40">
+          <div class="text-xs text-gray-500 dark:text-on-surface-variant font-medium mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-hashtag text-xs"></i> Permit No.
+          </div>
+          <div id="rm-permit_no" class="font-mono font-semibold text-gray-900 dark:text-on-surface truncate"></div>
+        </div>
+
+        <div class="p-3 bg-gray-50 dark:bg-surface-container-low rounded-lg border border-gray-100 dark:border-outline-variant/40">
+          <div class="text-xs text-gray-500 dark:text-on-surface-variant font-medium mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-building text-xs"></i> Unit / Coverage
+          </div>
+          <div id="rm-unit_coverage" class="font-semibold text-gray-900 dark:text-on-surface truncate"></div>
+        </div>
+
+        <div class="p-3 bg-gray-50 dark:bg-surface-container-low rounded-lg border border-gray-100 dark:border-outline-variant/40">
+          <div class="text-xs text-gray-500 dark:text-on-surface-variant font-medium mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-tag text-xs"></i> Description
+          </div>
+          <div id="rm-description" class="font-semibold text-gray-900 dark:text-on-surface truncate"></div>
+        </div>
+
+        <div class="p-3 bg-gray-50 dark:bg-surface-container-low rounded-lg border border-gray-100 dark:border-outline-variant/40">
+          <div class="text-xs text-gray-500 dark:text-on-surface-variant font-medium mb-1 flex items-center gap-1.5">
+            <i class="fa-regular fa-calendar text-xs"></i> Date Issued
+          </div>
+          <div id="rm-date_issued" class="font-semibold text-gray-900 dark:text-on-surface"></div>
+        </div>
+
+        <div class="p-3 bg-gray-50 dark:bg-surface-container-low rounded-lg border border-gray-100 dark:border-outline-variant/40">
+          <div class="text-xs text-gray-500 dark:text-on-surface-variant font-medium mb-1 flex items-center gap-1.5">
+            <i class="fa-regular fa-calendar-check text-xs"></i> Expiry Date
+          </div>
+          <div id="rm-expiry" class="font-semibold text-gray-900 dark:text-on-surface"></div>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="flex items-center justify-end gap-3 pt-5 mt-5 border-t border-gray-100 dark:border-outline-variant">
+        <button type="button" onclick="closeRemarksModal()"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-on-surface dark:bg-surface-container-high dark:border-outline dark:hover:bg-surface-container-highest transition-colors cursor-pointer">
+          Close
+        </button>
+        <button type="button" id="rm-edit-btn"
+          class="px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-on-primary dark:bg-primary dark:hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-pen-to-square text-xs"></i>
+          <span>Edit Permit</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <!-- END: Remarks & Details Modal -->
+
+  <!-- BEGIN: Sort Configuration Modal -->
+  <div id="sort-modal"
+    class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-xl shadow-2xl max-w-md w-full p-6 transition-all duration-200 relative text-gray-900 dark:text-on-surface">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-outline-variant">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-lg bg-brand-50 dark:bg-primary-container/20 text-brand-600 dark:text-primary flex items-center justify-center">
+            <i class="fa-solid fa-arrow-down-short-wide text-base"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-on-surface">Sort Permits</h2>
+            <p class="text-xs text-gray-500 dark:text-on-surface-variant">
+              Configure table column and ordering direction
+            </p>
+          </div>
+        </div>
+        <button onclick="closeSortModal()"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-on-surface hover:bg-gray-100 dark:hover:bg-surface-container-high transition-colors cursor-pointer">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <!-- Section 1: Column Selection -->
+      <div class="mt-5">
+        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-on-surface-variant mb-2.5">
+          1. Select Column
+        </label>
+        <div class="grid grid-cols-2 gap-2" id="sort-col-buttons">
+          <button type="button" onclick="selectSortColumn('plant')" id="sort-btn-plant"
+            class="p-3 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high">
+            <div class="flex items-center gap-2 truncate">
+              <i class="fa-solid fa-building text-xs text-gray-400"></i>
+              <span class="text-xs sm:text-sm truncate">Powerplant</span>
+            </div>
+            <i class="fa-solid fa-check text-xs text-brand-600 dark:text-primary hidden sort-check"></i>
+          </button>
+
+          <button type="button" onclick="selectSortColumn('permit')" id="sort-btn-permit"
+            class="p-3 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high">
+            <div class="flex items-center gap-2 truncate">
+              <i class="fa-regular fa-file-lines text-xs text-gray-400"></i>
+              <span class="text-xs sm:text-sm truncate">Permit Name</span>
+            </div>
+            <i class="fa-solid fa-check text-xs text-brand-600 dark:text-primary hidden sort-check"></i>
+          </button>
+
+          <button type="button" onclick="selectSortColumn('expiry')" id="sort-btn-expiry"
+            class="p-3 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high">
+            <div class="flex items-center gap-2 truncate">
+              <i class="fa-regular fa-calendar-check text-xs text-gray-400"></i>
+              <span class="text-xs sm:text-sm truncate">Expiry Date</span>
+            </div>
+            <i class="fa-solid fa-check text-xs text-brand-600 dark:text-primary hidden sort-check"></i>
+          </button>
+
+          <button type="button" onclick="selectSortColumn('date_issued')" id="sort-btn-date_issued"
+            class="p-3 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high">
+            <div class="flex items-center gap-2 truncate">
+              <i class="fa-regular fa-calendar text-xs text-gray-400"></i>
+              <span class="text-xs sm:text-sm truncate">Date Issued</span>
+            </div>
+            <i class="fa-solid fa-check text-xs text-brand-600 dark:text-primary hidden sort-check"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 2: Sort Direction Selection -->
+      <div class="mt-5">
+        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-on-surface-variant mb-2.5">
+          2. Sort By (Direction)
+        </label>
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Ascending Button -->
+          <button type="button" onclick="selectSortDir('asc')" id="sort-dir-asc"
+            class="p-3 rounded-lg border text-left flex flex-col gap-1 transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5 text-sm font-semibold">
+                <i class="fa-solid fa-arrow-up text-xs"></i>
+                <span>Ascending</span>
+              </div>
+              <i class="fa-solid fa-check text-xs text-brand-600 dark:text-primary hidden sort-check"></i>
+            </div>
+            <span id="sort-desc-asc-label" class="text-xs text-gray-500 dark:text-on-surface-variant/80 font-normal">
+              A to Z (Alphabetical)
+            </span>
+          </button>
+
+          <!-- Descending Button -->
+          <button type="button" onclick="selectSortDir('desc')" id="sort-dir-desc"
+            class="p-3 rounded-lg border text-left flex flex-col gap-1 transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5 text-sm font-semibold">
+                <i class="fa-solid fa-arrow-down text-xs"></i>
+                <span>Descending</span>
+              </div>
+              <i class="fa-solid fa-check text-xs text-brand-600 dark:text-primary hidden sort-check"></i>
+            </div>
+            <span id="sort-desc-desc-label" class="text-xs text-gray-500 dark:text-on-surface-variant/80 font-normal">
+              Z to A (Reverse)
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Status Summary Card -->
+      <div class="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-surface-container-low border border-gray-100 dark:border-outline-variant/40 text-xs text-gray-600 dark:text-on-surface-variant flex items-center gap-2">
+        <span class="font-semibold text-gray-800 dark:text-on-surface">Active sort:</span>
+        <span id="sort-summary-text">Expiry Date • Ascending</span>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex items-center justify-between pt-5 mt-5 border-t border-gray-100 dark:border-outline-variant">
+        <button type="button" onclick="resetSort()"
+          class="px-3 py-2 text-xs font-medium text-gray-600 dark:text-on-surface-variant hover:text-gray-900 dark:hover:text-on-surface flex items-center gap-1.5 transition-colors cursor-pointer">
+          <i class="fa-solid fa-rotate-left text-xs"></i>
+          <span>Reset to default</span>
+        </button>
+
+        <button type="button" onclick="closeSortModal()"
+          class="px-5 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-on-primary dark:bg-primary dark:hover:bg-primary/90 transition-colors shadow-sm cursor-pointer">
+          Done
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <!-- END: Sort Configuration Modal -->
 
   <!-- BEGIN: Add / Edit Permit Modal -->
   <div id="permit-modal"

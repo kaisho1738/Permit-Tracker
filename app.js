@@ -291,14 +291,110 @@ function setFilter(status) {
   renderTable();
 }
 
-function sortBy(field) {
-  if (sortField === field) {
-    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortField = field;
-    sortDir = 'asc';
-  }
+const SORT_META = {
+  plant: { name: 'Powerplant', asc: 'A to Z (Alphabetical)', desc: 'Z to A (Reverse)', shortAsc: 'A–Z', shortDesc: 'Z–A' },
+  permit: { name: 'Permit Name', asc: 'A to Z (Alphabetical)', desc: 'Z to A (Reverse)', shortAsc: 'A–Z', shortDesc: 'Z–A' },
+  expiry: { name: 'Expiry Date', asc: 'Earliest to Latest', desc: 'Latest to Earliest', shortAsc: 'Earliest', shortDesc: 'Latest' },
+  date_issued: { name: 'Date Issued', asc: 'Oldest to Newest', desc: 'Newest to Oldest', shortAsc: 'Oldest', shortDesc: 'Newest' }
+};
+
+function openSortModal() {
+  closeAllDropdowns();
+  const modal = document.getElementById('sort-modal');
+  if (!modal) return;
+  updateSortModalUI();
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+
+function closeSortModal() {
+  const modal = document.getElementById('sort-modal');
+  if (modal) modal.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+}
+
+function selectSortColumn(field) {
+  sortField = field;
+  updateSortModalUI();
   renderTable();
+}
+
+function selectSortDir(dir) {
+  sortDir = dir;
+  updateSortModalUI();
+  renderTable();
+}
+
+function resetSort() {
+  sortField = 'expiry';
+  sortDir = 'asc';
+  updateSortModalUI();
+  renderTable();
+}
+
+function updateSortModalUI() {
+  const meta = SORT_META[sortField] || SORT_META.expiry;
+
+  // Update button classes for columns
+  const fields = ['plant', 'permit', 'expiry', 'date_issued'];
+  fields.forEach(f => {
+    const btn = document.getElementById(`sort-btn-${f}`);
+    if (btn) {
+      const isSelected = sortField === f;
+      const check = btn.querySelector('.sort-check');
+      if (isSelected) {
+        btn.className = 'p-3 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer border-brand-600 bg-brand-50/50 text-brand-700 dark:border-primary dark:bg-primary-container/20 dark:text-primary font-semibold ring-1 ring-brand-500 dark:ring-primary';
+        if (check) check.classList.remove('hidden');
+      } else {
+        btn.className = 'p-3 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high';
+        if (check) check.classList.add('hidden');
+      }
+    }
+  });
+
+  // Update button classes for directions
+  const ascBtn = document.getElementById('sort-dir-asc');
+  const descBtn = document.getElementById('sort-dir-desc');
+  const ascCheck = ascBtn?.querySelector('.sort-check');
+  const descCheck = descBtn?.querySelector('.sort-check');
+
+  if (ascBtn) {
+    if (sortDir === 'asc') {
+      ascBtn.className = 'p-3 rounded-lg border text-left flex flex-col gap-1 transition-all cursor-pointer border-brand-600 bg-brand-50/50 text-brand-700 dark:border-primary dark:bg-primary-container/20 dark:text-primary font-semibold ring-1 ring-brand-500 dark:ring-primary';
+      if (ascCheck) ascCheck.classList.remove('hidden');
+    } else {
+      ascBtn.className = 'p-3 rounded-lg border text-left flex flex-col gap-1 transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high';
+      if (ascCheck) ascCheck.classList.add('hidden');
+    }
+  }
+
+  if (descBtn) {
+    if (sortDir === 'desc') {
+      descBtn.className = 'p-3 rounded-lg border text-left flex flex-col gap-1 transition-all cursor-pointer border-brand-600 bg-brand-50/50 text-brand-700 dark:border-primary dark:bg-primary-container/20 dark:text-primary font-semibold ring-1 ring-brand-500 dark:ring-primary';
+      if (descCheck) descCheck.classList.remove('hidden');
+    } else {
+      descBtn.className = 'p-3 rounded-lg border text-left flex flex-col gap-1 transition-all cursor-pointer border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high';
+      if (descCheck) descCheck.classList.add('hidden');
+    }
+  }
+
+  // Direction labels
+  const ascLabel = document.getElementById('sort-desc-asc-label');
+  const descLabel = document.getElementById('sort-desc-desc-label');
+  if (ascLabel) ascLabel.textContent = meta.asc;
+  if (descLabel) descLabel.textContent = meta.desc;
+
+  // Summary text in modal
+  const summary = document.getElementById('sort-summary-text');
+  if (summary) {
+    summary.innerHTML = `${meta.name} • <strong class="text-brand-600 dark:text-primary font-medium">${sortDir === 'asc' ? 'Ascending' : 'Descending'}</strong> (${sortDir === 'asc' ? meta.asc : meta.desc})`;
+  }
+
+  // Main UI Sort Button Label
+  const labelName = document.getElementById('sort-label-name');
+  const labelDir = document.getElementById('sort-label-dir');
+  if (labelName) labelName.textContent = meta.name;
+  if (labelDir) labelDir.textContent = sortDir === 'asc' ? meta.shortAsc : meta.shortDesc;
 }
 
 function getSortedRows(data) {
@@ -315,20 +411,6 @@ function getSortedRows(data) {
     return sortDir === 'asc'
       ? av.localeCompare(bv)
       : bv.localeCompare(av);
-  });
-}
-
-function updateSortIcons() {
-  const fields = ['plant', 'environmental_law', 'permit', 'date_issued', 'expiry'];
-  fields.forEach(f => {
-    const icon = document.getElementById(`sort-icon-${f}`);
-    if (icon) {
-      if (sortField === f) {
-        icon.className = sortDir === 'asc' ? 'fa-solid fa-arrow-up ml-1 text-brand-600 dark:text-primary' : 'fa-solid fa-arrow-down ml-1 text-brand-600 dark:text-primary';
-      } else {
-        icon.className = 'fa-solid fa-sort ml-1 text-gray-400 dark:text-on-surface-variant/50';
-      }
-    }
   });
 }
 
@@ -380,45 +462,44 @@ function renderTable() {
         const remarksText = (row.remarksAuto === false && row.remarks) ? row.remarks : autoRemarks;
 
         return `
-          <tr class="hover:bg-gray-50 dark:hover:bg-surface-container-high transition-colors group">
-            <td class="px-4 py-4 whitespace-nowrap text-gray-900 dark:text-on-surface font-semibold text-sm">
+          <tr class="hover:bg-blue-50/40 dark:hover:bg-surface-container-high transition-colors group cursor-pointer"
+              onclick="openRemarksModal(${row.id})"
+              title="Click to view remarks and permit details">
+            <td class="px-3.5 py-3.5 whitespace-nowrap text-gray-900 dark:text-on-surface font-semibold text-sm">
               ${esc(row.plant || '—')}
             </td>
-            <td class="px-4 py-4 text-gray-900 dark:text-on-surface font-medium text-sm">
+            <td class="px-3.5 py-3.5 text-gray-900 dark:text-on-surface font-medium text-sm">
               ${esc(row.environmental_law || '—')}
             </td>
-            <td class="px-4 py-4 text-gray-500 dark:text-on-surface-variant text-sm">
+            <td class="px-3.5 py-3.5 text-gray-500 dark:text-on-surface-variant text-sm">
               ${esc(row.description || '—')}
             </td>
-            <td class="px-4 py-4 text-gray-900 dark:text-on-surface text-sm">
+            <td class="px-3.5 py-3.5 text-gray-900 dark:text-on-surface text-sm">
               ${esc(row.permit || '—')}
             </td>
-            <td class="px-4 py-4 text-gray-500 dark:text-on-surface-variant text-sm">
+            <td class="px-3.5 py-3.5 text-gray-500 dark:text-on-surface-variant text-sm">
               ${esc(row.unit_coverage || '—')}
             </td>
-            <td class="px-4 py-4 text-gray-900 dark:text-on-surface text-sm font-mono whitespace-nowrap">
+            <td class="px-3 py-3.5 text-gray-900 dark:text-on-surface text-sm font-mono whitespace-nowrap">
               ${esc(row.permit_no || '—')}
             </td>
-            <td class="px-4 py-4 whitespace-nowrap text-gray-900 dark:text-on-surface text-sm">
+            <td class="px-3 py-3.5 whitespace-nowrap text-gray-900 dark:text-on-surface text-sm">
               ${formatDateDisplay(row.date_issued)}
             </td>
-            <td class="px-4 py-4 whitespace-nowrap text-gray-900 dark:text-on-surface text-sm font-medium">
+            <td class="px-3 py-3.5 whitespace-nowrap text-gray-900 dark:text-on-surface text-sm font-medium">
               ${formatDateDisplay(row.expiry)}
             </td>
-            <td class="px-4 py-4 whitespace-nowrap">
+            <td class="px-3 py-3.5 whitespace-nowrap">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${meta.badgeClass}">
                 <div class="w-1.5 h-1.5 rounded-full ${meta.dotClass} mr-1.5"></div>
                 ${meta.label}
               </span>
             </td>
-            <td class="px-4 py-4 text-gray-900 dark:text-on-surface text-sm max-w-[200px] truncate" title="${esc(remarksText)}">
-              ${esc(remarksText || '—')}
-            </td>
-            <td class="px-4 py-4 whitespace-nowrap text-right text-gray-400 dark:text-on-surface-variant hover:text-gray-700 dark:hover:text-on-surface relative">
-              <button class="row-action-btn w-8 h-8 rounded-md flex items-center justify-center hover:bg-gray-200 dark:hover:bg-surface-container-highest transition-colors focus:outline-none" 
-                      onclick="openActionMenu(event, ${row.id})" 
-                      title="Actions">
-                <i class="fa-solid fa-ellipsis-vertical pointer-events-none"></i>
+            <td class="px-3 py-3.5 whitespace-nowrap text-right text-gray-400 dark:text-on-surface-variant relative">
+              <button class="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-error/10 dark:hover:text-error transition-colors focus:outline-none ml-auto cursor-pointer" 
+                      onclick="handleDirectDelete(event, ${row.id})" 
+                      title="Delete Permit">
+                <i class="fa-solid fa-trash text-xs pointer-events-none"></i>
               </button>
             </td>
           </tr>
@@ -465,7 +546,7 @@ function renderTable() {
 
   updateFilterPillStyles();
   updateDashboard(counts);
-  updateSortIcons();
+  updateSortModalUI();
 }
 
 function updateFilterPillStyles() {
@@ -550,6 +631,14 @@ function updateDashboard(counts) {
 // ==========================================
 // 3-Dots Action Menu (Edit / Delete)
 // ==========================================
+function handleDirectDelete(event, rowId) {
+  if (event) event.stopPropagation();
+  closeAllDropdowns();
+  if (confirm('Are you sure you want to remove this permit?')) {
+    deleteRow(rowId);
+  }
+}
+
 function openActionMenu(event, rowId) {
   event.stopPropagation();
   activeActionMenuRowId = rowId;
@@ -563,6 +652,13 @@ function openActionMenu(event, rowId) {
   menu.style.top = `${rect.bottom + window.scrollY + 4}px`;
   menu.style.left = `${rect.right + window.scrollX - 140}px`;
   menu.classList.remove('hidden');
+}
+
+function handleMenuViewRemarks() {
+  if (activeActionMenuRowId == null) return;
+  const rowId = activeActionMenuRowId;
+  closeAllDropdowns();
+  openRemarksModal(rowId);
 }
 
 function handleMenuEdit() {
@@ -580,6 +676,88 @@ function handleMenuDelete() {
   if (confirm('Are you sure you want to remove this permit?')) {
     deleteRow(rowId);
   }
+}
+
+// ==========================================
+// Remarks & Details Modal
+// ==========================================
+function openRemarksModal(rowId) {
+  closeAllDropdowns();
+  const row = rows.find(r => r.id === rowId);
+  if (!row) return;
+
+  const modal = document.getElementById('remarks-modal');
+  if (!modal) return;
+
+  const months = getMonthsDiff(row.expiry);
+  const status = getStatus(months);
+  const meta = getStatusMeta(status);
+  const autoRemarks = getRemarks(months);
+  const remarksText = (row.remarksAuto === false && row.remarks) ? row.remarks : autoRemarks;
+  const isCustomRemarks = row.remarksAuto === false && Boolean(row.remarks);
+
+  // Status Badge
+  const statusBadge = document.getElementById('rm-status-badge');
+  if (statusBadge) {
+    statusBadge.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${meta.badgeClass}`;
+    statusBadge.innerHTML = `<div class="w-1.5 h-1.5 rounded-full ${meta.dotClass} mr-1.5"></div>${meta.label}`;
+  }
+
+  // Custom Tag
+  const customTag = document.getElementById('rm-custom-tag');
+  if (customTag) {
+    if (isCustomRemarks) {
+      customTag.classList.remove('hidden');
+    } else {
+      customTag.classList.add('hidden');
+    }
+  }
+
+  // Text Fields
+  const plantEl = document.getElementById('rm-plant');
+  if (plantEl) plantEl.textContent = row.plant || 'Untitled Plant';
+
+  const permitEl = document.getElementById('rm-permit');
+  if (permitEl) permitEl.textContent = row.permit || 'Permit';
+
+  const remarksEl = document.getElementById('rm-remarks-text');
+  if (remarksEl) remarksEl.textContent = remarksText || 'No remarks recorded.';
+
+  const lawEl = document.getElementById('rm-environmental_law');
+  if (lawEl) lawEl.textContent = row.environmental_law || '—';
+
+  const permitNoEl = document.getElementById('rm-permit_no');
+  if (permitNoEl) permitNoEl.textContent = row.permit_no || '—';
+
+  const unitEl = document.getElementById('rm-unit_coverage');
+  if (unitEl) unitEl.textContent = row.unit_coverage || '—';
+
+  const descEl = document.getElementById('rm-description');
+  if (descEl) descEl.textContent = row.description || '—';
+
+  const dateIssuedEl = document.getElementById('rm-date_issued');
+  if (dateIssuedEl) dateIssuedEl.textContent = formatDateDisplay(row.date_issued);
+
+  const expiryEl = document.getElementById('rm-expiry');
+  if (expiryEl) expiryEl.textContent = formatDateDisplay(row.expiry);
+
+  // Edit Button in Remarks Modal
+  const editBtn = document.getElementById('rm-edit-btn');
+  if (editBtn) {
+    editBtn.onclick = () => {
+      closeRemarksModal();
+      openPermitModal(row.id);
+    };
+  }
+
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+
+function closeRemarksModal() {
+  const modal = document.getElementById('remarks-modal');
+  if (modal) modal.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
 }
 
 function deleteRow(id) {

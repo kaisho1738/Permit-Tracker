@@ -247,6 +247,11 @@ export function usePermits() {
     return newItems.length;
   };
 
+  const setSort = (field: SortField, dir: SortDirection) => {
+    setSortField(field);
+    setSortDir(dir);
+  };
+
   return {
     permits,
     filteredPermits,
@@ -258,6 +263,7 @@ export function usePermits() {
     setStatusFilter,
     sortField,
     sortDir,
+    setSort,
     toggleSort,
     addPermit,
     updatePermit,
