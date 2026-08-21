@@ -13,6 +13,14 @@
     "install:all": "npm install --prefix client && npm install --prefix server"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@supabase/supabase-js": "^2.112.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "clsx": "^2.1.1",
+    "concurrently": "^9.1.2",
+    "lucide-react": "^1.33.0",
+    "react": "^19.2.8",
+    "react-router-dom": "^7.18.2",
+    "tailwind-merge": "^3.6.0"
   }
 }
