@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans bg-background text-on-background dark:bg-[#0b0f19] dark:text-[#f0f1f2];
+  }
+}
+
+/* Subtle animated background gradient */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-bg {
+  background: linear-gradient(-45deg, #f8f9fa, #edeeef, #e1e3e4, #d6e0f1);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.dark .animated-bg-dark {
+  background: linear-gradient(-45deg, #0b0f19, #131b2e, #1a233b, #0f172a);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-outline-variant rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-outline;
+}
