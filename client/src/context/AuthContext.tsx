@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   username: null,
   loading: true,
-  signOut: async () => {},
+  signOut: async () => { },
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -24,41 +24,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('username')
-        .eq('user_id', userId)
-        .single();
-      if (!error && data) {
-        setUsername(data.username);
-      }
-    } catch (err) {
-      console.error('Error fetching user profile:', err);
+  const updateUserData = (session: Session | null) => {
+    setSession(session);
+    const currentUser = session?.user ?? null;
+    setUser(currentUser);
+    if (currentUser?.email) {
+      const name = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+      setUsername(name);
+    } else {
+      setUsername(null);
     }
   };
 
   useEffect(() => {
     // Initial session fetch
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      }
+      updateUserData(session);
       setLoading(false);
     });
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
-        setUsername(null);
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      updateUserData(session);
       setLoading(false);
     });
 

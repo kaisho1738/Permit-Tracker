@@ -7,7 +7,7 @@ interface PermitModalProps {
   isOpen: boolean;
   permit: Permit | null;
   onClose: () => void;
-  onSave: (data: Omit<Permit, 'id'>) => void;
+  onSave: (data: Omit<Permit, 'id' | 'permit_id'>) => void;
 }
 
 export const PermitModal: React.FC<PermitModalProps> = ({

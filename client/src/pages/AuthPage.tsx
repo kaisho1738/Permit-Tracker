@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Mail,
   Lock,
-  User,
   ArrowRight,
   Sun,
   Moon,
@@ -15,11 +14,12 @@ import {
   Sparkles
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export const AuthPage: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -34,44 +34,33 @@ export const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
+      const endpoint = isSignUp ? `${API_BASE}/auth/register` : `${API_BASE}/auth/login`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Authentication failed');
+      }
+
+      // Hydrate Supabase client session if session returned
+      if (data.session) {
+        await supabase.auth.setSession(data.session);
+      }
+
       if (isSignUp) {
-        if (!username.trim()) {
-          setErrorMsg('Username is required.');
-          setLoading(false);
-          return;
-        }
-
-        // 1. Sign up with Supabase Auth
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-
-        // 2. Save public user profile if user was created
-        if (data.user) {
-          const { error: profileError } = await supabase.from('users').insert([
-            { user_id: data.user.id, username: username.trim() }
-          ]);
-          if (profileError) {
-            console.error('Error creating user profile:', profileError);
-          }
-        }
-
         setSuccessMsg('Account created successfully! Redirecting...');
         setTimeout(() => {
           navigate('/');
         }, 1500);
       } else {
-        // Sign In
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-
         navigate('/');
       }
     } catch (err: any) {
@@ -92,7 +81,7 @@ export const AuthPage: React.FC = () => {
       <div className={`absolute bottom-[-10%] right-[-10%] w-96 h-96 rounded-full mix-blend-multiply filter blur-[100px] pointer-events-none transition-opacity duration-300 ${theme === 'dark' ? 'bg-blue-600/30 opacity-60' : 'bg-secondary-container opacity-40'
         }`} />
 
-      {/* Theme Toggle (Inverted Mode Switcher) */}
+      {/* Theme Toggle */}
       <div className="absolute top-6 right-6 z-20">
         <button
           type="button"
@@ -171,25 +160,6 @@ export const AuthPage: React.FC = () => {
 
           {/* Form */}
           <form onSubmit={handleAuth} className="w-full flex flex-col gap-4">
-            {isSignUp && (
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-semibold text-on-surface-variant dark:text-slate-300 uppercase tracking-wider">
-                  Username
-                </label>
-                <div className="relative flex items-center">
-                  <User className="w-5 h-5 absolute left-3 text-on-surface-variant dark:text-slate-500 pointer-events-none" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="johndoe"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full bg-surface-container-lowest dark:bg-slate-950/80 border border-outline-variant dark:border-slate-800 rounded-xl pl-10 pr-4 h-11 text-sm text-on-surface dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-outline dark:placeholder:text-slate-600"
-                  />
-                </div>
-              </div>
-            )}
-
             {/* Email Input */}
             <div className="flex flex-col gap-1">
               <label className="text-[11px] font-semibold text-on-surface-variant dark:text-slate-300 uppercase tracking-wider" htmlFor="email">
@@ -251,7 +221,7 @@ export const AuthPage: React.FC = () => {
           {/* Footer Text */}
           <div className="mt-6 pt-5 border-t border-surface-variant dark:border-slate-800 w-full text-center">
             <p className="text-[11px] text-on-surface-variant dark:text-slate-500">
-              Powered by Supabase Authentication
+              Powered by Permit Tracker Auth Service
             </p>
           </div>
         </div>

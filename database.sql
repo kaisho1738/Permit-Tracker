@@ -4,7 +4,7 @@ CREATE TYPE permit_status AS ENUM ('safe', 'expiring', 'expired');
 -- Create a public users table that links to Supabase's internal auth.users
 CREATE TABLE public.users (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  username VARCHAR NOT NULL
+  email VARCHAR NOT NULL
 );
 
 -- Create the permit table
@@ -19,5 +19,6 @@ CREATE TABLE public.permits (
   permit_number VARCHAR,
   date_issued DATE,
   expiry_date DATE,
+  remarks VARCHAR,
   permit_status permit_status
 );

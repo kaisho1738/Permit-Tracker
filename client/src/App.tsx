@@ -101,20 +101,29 @@ const Dashboard: React.FC = () => {
     setRemarksModalState({ isOpen: false, permit: null });
   };
 
-  const handleSavePermit = (data: Omit<Permit, 'id'>) => {
-    if (modalState.permit) {
-      updatePermit(modalState.permit.id, data);
-      showToast('Permit updated successfully');
-    } else {
-      addPermit(data);
-      showToast('New permit added');
+  const handleSavePermit = async (data: Omit<Permit, 'id' | 'permit_id'>) => {
+    try {
+      if (modalState.permit) {
+        await updatePermit(modalState.permit.id, data);
+        showToast('Permit updated successfully');
+      } else {
+        await addPermit(data);
+        showToast('New permit added');
+      }
+      handleCloseModal();
+    } catch (err: any) {
+      showToast('Error saving permit: ' + err.message);
     }
   };
 
-  const handleDeletePermit = (id: number) => {
+  const handleDeletePermit = async (id: number) => {
     if (window.confirm('Are you sure you want to remove this permit?')) {
-      deletePermit(id);
-      showToast('Permit removed');
+      try {
+        await deletePermit(id);
+        showToast('Permit removed');
+      } catch (err: any) {
+        showToast('Error removing permit: ' + err.message);
+      }
     }
   };
 
@@ -129,10 +138,10 @@ const Dashboard: React.FC = () => {
 
   const handleImportCSV = (file: File) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const text = String(e.target?.result || '');
-        const count = importCSVData(text);
+        const count = await importCSVData(text);
         if (count > 0) {
           showToast(`Imported ${count} permit${count !== 1 ? 's' : ''}`);
         } else {

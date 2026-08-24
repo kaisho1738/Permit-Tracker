@@ -1,108 +1,51 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Permit, FilterStatus, SortField, SortDirection, StatusCounts } from '../types/permit';
 import { getMonthsDiff, getStatus, getRemarks } from '../utils/dateUtils';
 import { normalizeDateStr, parseCSVText } from '../utils/csvUtils';
+import { useAuth } from '../context/AuthContext';
 
-const STORAGE_KEY = 'permit_tracker_v1';
-
-const INITIAL_DATA: Permit[] = [
-  {
-    id: 1,
-    plant: 'Batangas Power Corp',
-    environmental_law: 'Philippine Clean Water Act',
-    description: 'WasteWater Discharge Permit (DP)',
-    permit: 'Permit to Operate',
-    unit_coverage: 'Oil Water Separator',
-    permit_no: 'XX-123-45-67890',
-    date_issued: '2021-10-10',
-    expiry: '2026-10-12',
-    remarks: 'Renewal pending approval',
-    remarksAuto: false,
-  },
-  {
-    id: 2,
-    plant: 'Marinduque Powerplant',
-    environmental_law: 'Philippine Clean Air Act of 2004',
-    description: 'WasteWater Discharge Permit (DP)',
-    permit: 'Permit to Operate',
-    unit_coverage: 'Oil Water Separator',
-    permit_no: 'XX-123-45-67891',
-    date_issued: '2021-07-06',
-    expiry: '2026-07-23',
-    remarks: 'Expired',
-    remarksAuto: false,
-  },
-  {
-    id: 3,
-    plant: 'Luzon Energy Hub',
-    environmental_law: 'Philippine Clean Water Act',
-    description: 'Hazardous Waste Generator ID',
-    permit: 'Registration',
-    unit_coverage: 'Facility Wide',
-    permit_no: 'HWG-987-654',
-    date_issued: '2022-01-15',
-    expiry: '2026-08-07',
-    remarks: 'Missing documentation',
-    remarksAuto: false,
-  },
-  {
-    id: 4,
-    plant: 'Visayas Thermal Plant',
-    environmental_law: 'Philippine Clean Air Act of 2004',
-    description: 'WasteWater Discharge Permit (DP)',
-    permit: 'Permit to Operate',
-    unit_coverage: 'Oil Water Separator',
-    permit_no: 'XX-123-45-67892',
-    date_issued: '2023-02-18',
-    expiry: '2026-08-27',
-    remarks: 'Preparing for renewal',
-    remarksAuto: false,
-  },
-  {
-    id: 5,
-    plant: 'Mindanao Geo Hub',
-    environmental_law: 'Renewable Energy Compliance Act',
-    description: 'Geothermal Operation Certificate',
-    permit: 'Environmental Compliance Certificate (ECC)',
-    unit_coverage: 'Unit 1 & 2 Generators',
-    permit_no: 'ECC-2023-8891',
-    date_issued: '2023-05-10',
-    expiry: '2026-11-15',
-    remarks: '',
-    remarksAuto: true,
-  },
-];
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export function usePermits() {
-  const [permits, setPermits] = useState<Permit[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.rows && Array.isArray(parsed.rows)) {
-          return parsed.rows;
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load permits from localStorage:', e);
-    }
-    return INITIAL_DATA;
-  });
+  const [permits, setPermits] = useState<Permit[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
   const [sortField, setSortField] = useState<SortField>('expiry');
   const [sortDir, setSortDir] = useState<SortDirection>('asc');
 
-  // Sync to localStorage
-  useEffect(() => {
+  const { session } = useAuth();
+
+  const fetchPermits = useCallback(async () => {
+    if (!session?.access_token) return;
+    setLoading(true);
     try {
-      const maxId = permits.length > 0 ? Math.max(...permits.map((p) => p.id)) : 0;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ rows: permits, nextId: maxId + 1 }));
-    } catch (e) {
-      console.error('Failed to save permits to localStorage:', e);
+      const response = await fetch(`${API_BASE}/permits`, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch permits');
+      const data = await response.json();
+      const mappedPermits = data.permits.map((p: any) => ({
+        ...p,
+        id: p.permit_id
+      }));
+      setPermits(mappedPermits);
+      setError(null);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  }, [permits]);
+  }, [session?.access_token]);
+
+  useEffect(() => {
+    fetchPermits();
+  }, [fetchPermits]);
 
   // Compute status counts across all permits
   const statusCounts = useMemo<StatusCounts>(() => {
@@ -162,21 +105,63 @@ export function usePermits() {
       .slice(0, 5);
   }, [permits]);
 
-  const addPermit = (data: Omit<Permit, 'id'>) => {
-    const nextId = permits.length > 0 ? Math.max(...permits.map((p) => p.id)) + 1 : 1;
-    const newPermit: Permit = {
-      ...data,
-      id: nextId,
-    };
-    setPermits((prev) => [newPermit, ...prev]);
+  const addPermit = async (data: Omit<Permit, 'id' | 'permit_id'>) => {
+    if (!session?.access_token) return;
+    try {
+      const response = await fetch(`${API_BASE}/permits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to create permit');
+      const resData = await response.json();
+      const newPermit = { ...resData.permit, id: resData.permit.permit_id };
+      setPermits((prev) => [newPermit, ...prev]);
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 
-  const updatePermit = (id: number, data: Omit<Permit, 'id'>) => {
-    setPermits((prev) => prev.map((p) => (p.id === id ? { ...data, id } : p)));
+  const updatePermit = async (id: number, data: Omit<Permit, 'id' | 'permit_id'>) => {
+    if (!session?.access_token) return;
+    try {
+      const response = await fetch(`${API_BASE}/permits/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to update permit');
+      const resData = await response.json();
+      const updatedPermit = { ...resData.permit, id: resData.permit.permit_id };
+      setPermits((prev) => prev.map((p) => (p.id === id ? updatedPermit : p)));
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 
-  const deletePermit = (id: number) => {
-    setPermits((prev) => prev.filter((p) => p.id !== id));
+  const deletePermit = async (id: number) => {
+    if (!session?.access_token) return;
+    try {
+      const response = await fetch(`${API_BASE}/permits/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to delete permit');
+      setPermits((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 
   const toggleSort = (field: SortField) => {
@@ -188,7 +173,9 @@ export function usePermits() {
     }
   };
 
-  const importCSVData = (csvText: string): number => {
+  const importCSVData = async (csvText: string): Promise<number> => {
+    if (!session?.access_token) return 0;
+
     const table = parseCSVText(csvText);
     if (table.length < 2) return 0;
 
@@ -213,8 +200,7 @@ export function usePermits() {
     const get = (r: string[], key: keyof typeof col) =>
       col[key] > -1 && r[col[key]] !== undefined ? r[col[key]].trim() : '';
 
-    let nextId = permits.length > 0 ? Math.max(...permits.map((p) => p.id)) + 1 : 1;
-    const newItems: Permit[] = [];
+    const newItems: Omit<Permit, 'id' | 'permit_id'>[] = [];
 
     for (let i = 1; i < table.length; i++) {
       const r = table[i];
@@ -227,7 +213,6 @@ export function usePermits() {
       const remarksAuto = remarks === '' || remarks === autoText;
 
       newItems.push({
-        id: nextId++,
         plant: get(r, 'plant'),
         environmental_law: get(r, 'environmental_law'),
         description: get(r, 'description'),
@@ -242,9 +227,18 @@ export function usePermits() {
     }
 
     if (newItems.length > 0) {
-      setPermits((prev) => [...newItems, ...prev]);
+      let successCount = 0;
+      for (const item of newItems) {
+        try {
+          await addPermit(item);
+          successCount++;
+        } catch (e) {
+          console.error("Failed to import row", item, e);
+        }
+      }
+      return successCount;
     }
-    return newItems.length;
+    return 0;
   };
 
   const setSort = (field: SortField, dir: SortDirection) => {
@@ -269,5 +263,7 @@ export function usePermits() {
     updatePermit,
     deletePermit,
     importCSVData,
+    loading,
+    error,
   };
 }

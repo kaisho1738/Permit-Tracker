@@ -2,6 +2,7 @@ export type StatusType = 'green' | 'amber' | 'red' | 'gray';
 
 export interface Permit {
   id: number;
+  permit_id?: number;
   plant: string;
   environmental_law: string;
   description: string;
