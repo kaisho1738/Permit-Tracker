@@ -35,10 +35,10 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
         <div>
           <h1 className="text-xl font-semibold text-gray-900 dark:text-slate-100 tracking-tight">
-            Permit Tracker
+            Permity
           </h1>
           <p className="text-sm text-gray-500 dark:text-slate-400">
-            Monitor and manage powerplant permit validity in real time
+            Monitor and manage permit validity in real time
           </p>
         </div>
       </div>

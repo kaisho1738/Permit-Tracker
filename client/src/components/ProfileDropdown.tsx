@@ -155,7 +155,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
 
         <div className="pt-1.5 text-[11px] text-gray-400 dark:text-slate-500 flex items-center justify-center gap-1 border-t border-gray-100 dark:border-slate-800 mt-2">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Permit Tracker v1.2</span>
+          <span>Permity v1.2</span>
         </div>
       </div>
     </div>

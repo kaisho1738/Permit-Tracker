@@ -159,7 +159,7 @@ export const AuthPage: React.FC = () => {
               <ShieldCheck className="w-9 h-9" />
             </div>
             <h1 className="text-2xl font-bold text-on-surface dark:text-white mb-1 text-center flex items-center justify-center gap-1.5 tracking-tight">
-              Permit Tracker <CheckCircle2 className="w-5 h-5 text-primary dark:text-emerald-400" />
+              Permity
             </h1>
             <p className="text-sm text-on-surface-variant dark:text-slate-400 text-center">
               {isSignUp ? 'Create your account to manage permits' : 'Sign in to access your permits'}
