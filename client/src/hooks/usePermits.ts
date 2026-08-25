@@ -15,6 +15,8 @@ export function usePermits() {
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
   const [sortField, setSortField] = useState<SortField>('expiry');
   const [sortDir, setSortDir] = useState<SortDirection>('asc');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const PAGE_SIZE = 6;
 
   const { session } = useAuth();
 
@@ -92,6 +94,29 @@ export function usePermits() {
           : (bv as string).localeCompare(av as string);
       });
   }, [permits, searchQuery, statusFilter, sortField, sortDir]);
+
+  // Reset page when filter/search/sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, sortField, sortDir]);
+
+  // Total pages based on filtered permits
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredPermits.length / PAGE_SIZE));
+  }, [filteredPermits.length]);
+
+  // Clamp current page when permits change
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  // Sliced permits for current page (5 items per page)
+  const paginatedPermits = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredPermits.slice(start, start + PAGE_SIZE);
+  }, [filteredPermits, currentPage]);
 
   // 5 Upcoming Expirations
   const upcomingPermits = useMemo(() => {
@@ -268,6 +293,7 @@ export function usePermits() {
   return {
     permits,
     filteredPermits,
+    paginatedPermits,
     upcomingPermits,
     statusCounts,
     searchQuery,
@@ -278,6 +304,10 @@ export function usePermits() {
     sortDir,
     setSort,
     toggleSort,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    pageSize: PAGE_SIZE,
     addPermit,
     updatePermit,
     deletePermit,

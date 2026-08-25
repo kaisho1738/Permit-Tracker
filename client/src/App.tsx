@@ -13,6 +13,7 @@ import { PermitModal } from './components/PermitModal';
 import { RemarksModal } from './components/RemarksModal';
 import { SortModal } from './components/SortModal';
 import { Toast } from './components/Toast';
+import { Pagination } from './components/Pagination';
 import { exportPermitsToCSV } from './utils/csvUtils';
 import { Permit } from './types/permit';
 
@@ -39,6 +40,7 @@ const Dashboard: React.FC = () => {
   const {
     permits,
     filteredPermits,
+    paginatedPermits,
     upcomingPermits,
     statusCounts,
     searchQuery,
@@ -48,6 +50,10 @@ const Dashboard: React.FC = () => {
     sortField,
     sortDir,
     setSort,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    pageSize,
     addPermit,
     updatePermit,
     deletePermit,
@@ -196,10 +202,19 @@ const Dashboard: React.FC = () => {
 
             {/* Main Table */}
             <PermitTable
-              permits={filteredPermits}
+              permits={paginatedPermits}
               onViewRemarks={handleViewRemarks}
               onDeletePermit={handleDeletePermit}
               onOpenAddModal={handleOpenAddModal}
+            />
+
+            {/* Pagination Controls */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredPermits.length}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
             />
           </section>
         </div>
