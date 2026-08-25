@@ -44,7 +44,16 @@ export const AuthPage: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      let data: any = {};
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json().catch(() => ({}));
+      } else {
+        const text = await response.text();
+        if (!response.ok) {
+          throw new Error(text || `Server returned error status ${response.status}`);
+        }
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Authentication failed');
