@@ -18,60 +18,60 @@ export const PermitTable: React.FC<PermitTableProps> = ({
 }) => {
   return (
     <div className="overflow-x-auto flex-1">
-      <table className="min-w-full divide-y divide-gray-200 dark:divide-outline-variant text-sm">
-        <thead className="bg-[#f4f3f0] dark:bg-surface-container-low select-none transition-colors">
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800 text-sm">
+        <thead className="bg-[#f4f3f0] dark:bg-slate-800/80 select-none transition-colors">
           <tr>
             <th
               scope="col"
-              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap"
+              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
               Powerplant Name
             </th>
             <th
               scope="col"
-              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap"
+              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
               Environmental Law
             </th>
             <th
               scope="col"
-              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider"
+              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider"
             >
               Description
             </th>
             <th
               scope="col"
-              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap"
+              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
               Permit
             </th>
             <th
               scope="col"
-              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider"
+              className="px-3.5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider"
             >
               Unit / Coverage
             </th>
             <th
               scope="col"
-              className="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap"
+              className="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
               Permit No.
             </th>
             <th
               scope="col"
-              className="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap"
+              className="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
               Date Issued
             </th>
             <th
               scope="col"
-              className="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap"
+              className="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
               Expiry Date
             </th>
             <th
               scope="col"
-              className="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider whitespace-nowrap"
+              className="px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
               Status
             </th>
@@ -80,7 +80,7 @@ export const PermitTable: React.FC<PermitTableProps> = ({
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white dark:bg-surface-container divide-y divide-gray-200 dark:divide-outline-variant text-sm transition-colors">
+        <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800 text-sm transition-colors">
           {permits.map((row) => {
             const months = getMonthsDiff(row.expiry);
             const status = getStatus(months);
@@ -91,33 +91,33 @@ export const PermitTable: React.FC<PermitTableProps> = ({
                 key={row.id}
                 onClick={() => onViewRemarks(row)}
                 title="Click to view remarks and permit details"
-                className="hover:bg-blue-50/40 dark:hover:bg-surface-container-high transition-colors cursor-pointer group"
+                className="hover:bg-blue-50/40 dark:hover:bg-slate-800/60 transition-colors cursor-pointer group"
               >
-                <td className="px-3.5 py-3.5 whitespace-nowrap text-gray-900 dark:text-on-surface font-semibold text-sm">
+                <td className="px-3.5 py-3.5 whitespace-nowrap text-gray-900 dark:text-slate-100 font-semibold text-sm">
                   {row.plant || '—'}
                 </td>
-                <td className="px-3.5 py-3.5 text-gray-900 dark:text-on-surface font-medium text-sm">
+                <td className="px-3.5 py-3.5 text-gray-900 dark:text-slate-200 font-medium text-sm">
                   {row.environmental_law || '—'}
                 </td>
-                <td className="px-3.5 py-3.5 text-gray-500 dark:text-on-surface-variant text-sm">
+                <td className="px-3.5 py-3.5 text-gray-500 dark:text-slate-400 text-sm">
                   {row.description || '—'}
                 </td>
-                <td className="px-3.5 py-3.5 text-gray-900 dark:text-on-surface text-sm">
+                <td className="px-3.5 py-3.5 text-gray-900 dark:text-slate-200 text-sm">
                   {row.permit || '—'}
                 </td>
-                <td className="px-3.5 py-3.5 text-gray-500 dark:text-on-surface-variant text-sm">
+                <td className="px-3.5 py-3.5 text-gray-500 dark:text-slate-400 text-sm">
                   {row.unit_coverage || '—'}
                 </td>
-                <td className="px-3 py-3.5 text-gray-900 dark:text-on-surface text-sm font-mono whitespace-nowrap">
+                <td className="px-3.5 py-3.5 text-gray-900 dark:text-slate-200 text-sm font-mono whitespace-nowrap">
                   {row.permit_no || '—'}
                 </td>
-                <td className="px-3 py-3.5 whitespace-nowrap text-gray-900 dark:text-on-surface text-sm">
+                <td className="px-3.5 py-3.5 whitespace-nowrap text-gray-900 dark:text-slate-200 text-sm">
                   {formatDateDisplay(row.date_issued)}
                 </td>
-                <td className="px-3 py-3.5 whitespace-nowrap text-gray-900 dark:text-on-surface text-sm font-medium">
+                <td className="px-3.5 py-3.5 whitespace-nowrap text-gray-900 dark:text-slate-100 text-sm font-medium">
                   {formatDateDisplay(row.expiry)}
                 </td>
-                <td className="px-3 py-3.5 whitespace-nowrap">
+                <td className="px-3.5 py-3.5 whitespace-nowrap">
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${meta.badgeClass}`}
                   >
@@ -125,13 +125,13 @@ export const PermitTable: React.FC<PermitTableProps> = ({
                     {meta.label}
                   </span>
                 </td>
-                <td className="px-3 py-3.5 whitespace-nowrap text-right text-gray-400 dark:text-on-surface-variant">
+                <td className="px-3.5 py-3.5 whitespace-nowrap text-right text-gray-400 dark:text-slate-500">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onDeletePermit(row.id);
                     }}
-                    className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-error/10 dark:hover:text-error transition-colors focus:outline-none cursor-pointer ml-auto"
+                    className="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:text-danger-500 hover:bg-danger-50 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors focus:outline-none cursor-pointer ml-auto"
                     title="Delete Permit"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -146,12 +146,12 @@ export const PermitTable: React.FC<PermitTableProps> = ({
       {/* Empty State */}
       {permits.length === 0 && (
         <div className="text-center py-12 px-4">
-          <FolderOpen className="w-10 h-10 text-gray-300 dark:text-outline mx-auto mb-3" />
-          <p className="text-sm text-gray-500 dark:text-on-surface-variant">
+          <FolderOpen className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
+          <p className="text-sm text-gray-500 dark:text-slate-400">
             No permits found.{' '}
             <button
               onClick={onOpenAddModal}
-              className="text-brand-600 dark:text-primary font-medium hover:underline cursor-pointer"
+              className="text-brand-600 dark:text-indigo-400 font-medium hover:underline cursor-pointer"
             >
               Add a new permit
             </button>

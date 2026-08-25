@@ -75,25 +75,25 @@ export const SortModal: React.FC<SortModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
       <div
-        className="bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-xl shadow-2xl max-w-md w-full p-6 transition-all duration-200 relative text-gray-900 dark:text-on-surface"
+        className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-2xl max-w-md w-full p-6 transition-all duration-200 relative text-gray-900 dark:text-slate-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-outline-variant">
+        <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-brand-50 dark:bg-primary-container/20 text-brand-600 dark:text-primary flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-brand-50 dark:bg-indigo-950/60 text-brand-600 dark:text-indigo-400 flex items-center justify-center">
               <ArrowUpDown className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-on-surface">Sort Permits</h2>
-              <p className="text-xs text-gray-500 dark:text-on-surface-variant">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100">Sort Permits</h2>
+              <p className="text-xs text-gray-500 dark:text-slate-400">
                 Configure table column and ordering direction
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-on-surface hover:bg-gray-100 dark:hover:bg-surface-container-high transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -102,7 +102,7 @@ export const SortModal: React.FC<SortModalProps> = ({
 
         {/* Section 1: Column Selection */}
         <div className="mt-5">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-on-surface-variant mb-2.5">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-2.5">
             1. Select Column
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -114,17 +114,17 @@ export const SortModal: React.FC<SortModalProps> = ({
                   type="button"
                   onClick={() => handleSelectColumn(col.id)}
                   className={`p-3 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer ${isSelected
-                      ? 'border-brand-600 bg-brand-50/50 text-brand-700 dark:border-primary dark:bg-primary-container/20 dark:text-primary font-semibold ring-1 ring-brand-500 dark:ring-primary'
-                      : 'border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high'
+                      ? 'border-brand-600 bg-brand-50/50 text-brand-700 dark:border-indigo-500 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold ring-1 ring-brand-500 dark:ring-indigo-500'
+                      : 'border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'
                     }`}
                 >
                   <div className="flex items-center gap-2 truncate">
-                    <span className={isSelected ? 'text-brand-600 dark:text-primary' : 'text-gray-400 dark:text-on-surface-variant'}>
+                    <span className={isSelected ? 'text-brand-600 dark:text-indigo-400' : 'text-gray-400 dark:text-slate-400'}>
                       {col.icon}
                     </span>
                     <span className="text-xs sm:text-sm truncate">{col.label}</span>
                   </div>
-                  {isSelected && <Check className="w-4 h-4 text-brand-600 dark:text-primary shrink-0 ml-1" />}
+                  {isSelected && <Check className="w-4 h-4 text-brand-600 dark:text-indigo-400 shrink-0 ml-1" />}
                 </button>
               );
             })}
@@ -133,7 +133,7 @@ export const SortModal: React.FC<SortModalProps> = ({
 
         {/* Section 2: Sort Direction Selection */}
         <div className="mt-5">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-on-surface-variant mb-2.5">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-2.5">
             2. Sort By (Direction)
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -142,8 +142,8 @@ export const SortModal: React.FC<SortModalProps> = ({
               type="button"
               onClick={() => handleSelectDir('asc')}
               className={`p-3 rounded-lg border text-left flex flex-col gap-1 transition-all cursor-pointer ${sortDir === 'asc'
-                  ? 'border-brand-600 bg-brand-50/50 text-brand-700 dark:border-primary dark:bg-primary-container/20 dark:text-primary font-semibold ring-1 ring-brand-500 dark:ring-primary'
-                  : 'border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high'
+                  ? 'border-brand-600 bg-brand-50/50 text-brand-700 dark:border-indigo-500 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold ring-1 ring-brand-500 dark:ring-indigo-500'
+                  : 'border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'
                 }`}
             >
               <div className="flex items-center justify-between">
@@ -151,9 +151,9 @@ export const SortModal: React.FC<SortModalProps> = ({
                   <ArrowUp className="w-4 h-4" />
                   <span>Ascending</span>
                 </div>
-                {sortDir === 'asc' && <Check className="w-4 h-4 text-brand-600 dark:text-primary" />}
+                {sortDir === 'asc' && <Check className="w-4 h-4 text-brand-600 dark:text-indigo-400" />}
               </div>
-              <span className="text-xs text-gray-500 dark:text-on-surface-variant/80 font-normal">
+              <span className="text-xs text-gray-500 dark:text-slate-400 font-normal">
                 {currentColumn.ascLabel}
               </span>
             </button>
@@ -163,8 +163,8 @@ export const SortModal: React.FC<SortModalProps> = ({
               type="button"
               onClick={() => handleSelectDir('desc')}
               className={`p-3 rounded-lg border text-left flex flex-col gap-1 transition-all cursor-pointer ${sortDir === 'desc'
-                  ? 'border-brand-600 bg-brand-50/50 text-brand-700 dark:border-primary dark:bg-primary-container/20 dark:text-primary font-semibold ring-1 ring-brand-500 dark:ring-primary'
-                  : 'border-gray-200 dark:border-outline-variant bg-white dark:bg-surface-container-low text-gray-700 dark:text-on-surface hover:bg-gray-50 dark:hover:bg-surface-container-high'
+                  ? 'border-brand-600 bg-brand-50/50 text-brand-700 dark:border-indigo-500 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold ring-1 ring-brand-500 dark:ring-indigo-500'
+                  : 'border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'
                 }`}
             >
               <div className="flex items-center justify-between">
@@ -172,9 +172,9 @@ export const SortModal: React.FC<SortModalProps> = ({
                   <ArrowDown className="w-4 h-4" />
                   <span>Descending</span>
                 </div>
-                {sortDir === 'desc' && <Check className="w-4 h-4 text-brand-600 dark:text-primary" />}
+                {sortDir === 'desc' && <Check className="w-4 h-4 text-brand-600 dark:text-indigo-400" />}
               </div>
-              <span className="text-xs text-gray-500 dark:text-on-surface-variant/80 font-normal">
+              <span className="text-xs text-gray-500 dark:text-slate-400 font-normal">
                 {currentColumn.descLabel}
               </span>
             </button>
@@ -182,11 +182,11 @@ export const SortModal: React.FC<SortModalProps> = ({
         </div>
 
         {/* Live Status Summary Card */}
-        <div className="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-surface-container-low border border-gray-100 dark:border-outline-variant/40 text-xs text-gray-600 dark:text-on-surface-variant flex items-center gap-2">
-          <span className="font-semibold text-gray-800 dark:text-on-surface">Active sort:</span>
+        <div className="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-slate-800/60 border border-gray-100 dark:border-slate-800 text-xs text-gray-600 dark:text-slate-300 flex items-center gap-2">
+          <span className="font-semibold text-gray-800 dark:text-slate-100">Active sort:</span>
           <span>
             {currentColumn.label} •{' '}
-            <strong className="text-brand-600 dark:text-primary font-medium">
+            <strong className="text-brand-600 dark:text-indigo-400 font-medium">
               {sortDir === 'asc' ? 'Ascending' : 'Descending'}
             </strong>{' '}
             ({sortDir === 'asc' ? currentColumn.ascLabel : currentColumn.descLabel})
@@ -194,11 +194,11 @@ export const SortModal: React.FC<SortModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-5 mt-5 border-t border-gray-100 dark:border-outline-variant">
+        <div className="flex items-center justify-between pt-5 mt-5 border-t border-gray-100 dark:border-slate-800">
           <button
             type="button"
             onClick={handleReset}
-            className="px-3 py-2 text-xs font-medium text-gray-600 dark:text-on-surface-variant hover:text-gray-900 dark:hover:text-on-surface flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3 py-2 text-xs font-medium text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset to default</span>
@@ -207,7 +207,7 @@ export const SortModal: React.FC<SortModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-on-primary dark:bg-primary dark:hover:bg-primary/90 transition-colors shadow-sm cursor-pointer"
+            className="px-5 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-white dark:bg-indigo-600 dark:hover:bg-indigo-500 transition-colors shadow-sm cursor-pointer"
           >
             Done
           </button>

@@ -13,15 +13,15 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
   onSelectFilter,
 }) => {
   return (
-    <aside className="w-full lg:w-80 bg-[#fffaf5] dark:bg-surface-container border border-[#f3e8d9] dark:border-outline-variant rounded-lg p-5 shadow-sm h-fit transition-colors shrink-0">
-      <h3 className="text-xs font-semibold text-gray-500 dark:text-on-surface-variant uppercase tracking-wider mb-4 flex items-center justify-between">
+    <aside className="w-full lg:w-80 bg-[#fffaf5] dark:bg-slate-900 border border-[#f3e8d9] dark:border-slate-800 rounded-lg p-5 shadow-sm h-fit transition-colors shrink-0">
+      <h3 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-4 flex items-center justify-between">
         <span>Next to Expire</span>
-        <Clock className="w-3.5 h-3.5 text-gray-400" />
+        <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500" />
       </h3>
 
       <ul className="space-y-4">
         {upcomingPermits.length === 0 ? (
-          <li className="text-xs text-gray-400 dark:text-on-surface-variant py-2">
+          <li className="text-xs text-gray-400 dark:text-slate-500 py-2">
             No permits with expiry dates.
           </li>
         ) : (
@@ -35,13 +35,13 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
                 key={permit.id}
                 onClick={() => onSelectFilter(status as FilterStatus)}
                 title={`Filter by ${meta.label}`}
-                className="flex justify-between items-start border-b border-gray-100 dark:border-outline-variant pb-3 last:border-0 hover:bg-black/5 dark:hover:bg-white/5 p-1.5 rounded cursor-pointer transition-colors"
+                className="flex justify-between items-start border-b border-gray-100 dark:border-slate-800/80 pb-3 last:border-0 hover:bg-black/5 dark:hover:bg-slate-800/50 p-1.5 rounded cursor-pointer transition-colors"
               >
                 <div className="overflow-hidden pr-2">
-                  <div className="text-sm font-semibold text-gray-900 dark:text-on-surface truncate">
+                  <div className="text-sm font-semibold text-gray-900 dark:text-slate-100 truncate">
                     {permit.plant || 'Untitled permit'}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-on-surface-variant mt-0.5">
+                  <div className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
                     {permit.permit || ''} • {dateStr}
                   </div>
                 </div>

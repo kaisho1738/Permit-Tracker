@@ -57,30 +57,30 @@ export function getStatusMeta(status: StatusType): StatusMetadata {
       return {
         label: 'Safe',
         code: '[GREEN]',
-        badgeClass: 'bg-success-50 text-success-500 border-success-200 dark:bg-success/20 dark:text-success dark:border-success/30',
-        dotClass: 'bg-success-500 dark:bg-success',
+        badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/80',
+        dotClass: 'bg-emerald-500 dark:bg-emerald-400',
       };
     case 'amber':
       return {
         label: 'Expiring Soon',
         code: '[ORANGE]',
-        badgeClass: 'bg-warning-50 text-warning-600 border-warning-200 dark:bg-warning/20 dark:text-warning dark:border-warning/30',
-        dotClass: 'bg-warning-500 dark:bg-warning',
+        badgeClass: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/80',
+        dotClass: 'bg-amber-500 dark:bg-amber-400',
       };
     case 'red':
       return {
         label: 'Critical / Expired',
         code: '[RED]',
-        badgeClass: 'bg-danger-50 text-danger-500 border-danger-200 dark:bg-error/20 dark:text-error dark:border-error/30',
-        dotClass: 'bg-danger-500 dark:bg-error',
+        badgeClass: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/80',
+        dotClass: 'bg-rose-500 dark:bg-rose-400',
       };
     case 'gray':
     default:
       return {
         label: 'No Date',
         code: '[GRAY]',
-        badgeClass: 'bg-gray-100 text-gray-500 border-gray-200 dark:bg-surface-container-highest dark:text-on-surface-variant dark:border-outline-variant',
-        dotClass: 'bg-gray-400 dark:bg-on-surface-variant',
+        badgeClass: 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
+        dotClass: 'bg-gray-400 dark:bg-slate-500',
       };
   }
 }

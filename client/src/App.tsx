@@ -157,7 +157,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f9fafb] text-gray-800 dark:bg-background dark:text-on-surface transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-[#f9fafb] text-gray-800 dark:bg-[#0b0f19] dark:text-[#f0f1f2] transition-colors duration-200">
       {/* Header */}
       <Header
         onAddPermit={handleOpenAddModal}
@@ -180,7 +180,7 @@ const Dashboard: React.FC = () => {
           <StatusBreakdown counts={statusCounts} />
 
           {/* Table Container */}
-          <section className="bg-white dark:bg-surface-container border border-gray-200 dark:border-outline-variant rounded-lg shadow-sm flex-1 flex flex-col overflow-hidden transition-colors">
+          <section className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg shadow-sm flex-1 flex flex-col overflow-hidden transition-colors">
             {/* Search & Filters */}
             <TableControls
               searchQuery={searchQuery}

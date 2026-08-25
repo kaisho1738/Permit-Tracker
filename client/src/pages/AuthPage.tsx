@@ -87,7 +87,7 @@ export const AuthPage: React.FC = () => {
           type="button"
           onClick={toggleTheme}
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Inverted / Dark'} mode`}
-          className="p-2.5 rounded-full bg-surface-container-lowest/80 dark:bg-surface-container-high/80 border border-outline-variant/50 backdrop-blur-md hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all text-on-surface-variant dark:text-white flex items-center justify-center shadow-sm cursor-pointer"
+          className="p-2.5 rounded-full bg-white/80 dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700/60 backdrop-blur-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-all text-gray-700 dark:text-white flex items-center justify-center shadow-sm cursor-pointer"
         >
           {theme === 'dark' ? (
             <Sun className="w-5 h-5 text-amber-400" />

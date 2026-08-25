@@ -21,17 +21,17 @@ export const Header: React.FC<HeaderProps> = ({ onAddPermit, onExportCSV, onImpo
   };
 
   return (
-    <header className="bg-white dark:bg-surface-container border-b border-gray-200 dark:border-outline-variant px-6 py-4 flex items-center justify-between sticky top-0 z-20 transition-colors duration-200 shadow-sm">
+    <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-20 transition-colors duration-200 shadow-sm">
       {/* Title & Logo */}
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-brand-50 dark:bg-primary-container/20 rounded-lg flex items-center justify-center text-brand-600 dark:text-primary transition-colors shadow-xs">
+        <div className="w-10 h-10 bg-brand-50 dark:bg-indigo-950/50 border border-transparent dark:border-indigo-900/50 rounded-lg flex items-center justify-center text-brand-600 dark:text-indigo-400 transition-colors shadow-xs">
           <FileText className="w-5 h-5" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-on-surface tracking-tight">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-slate-100 tracking-tight">
             Permit Tracker
           </h1>
-          <p className="text-sm text-gray-500 dark:text-on-surface-variant">
+          <p className="text-sm text-gray-500 dark:text-slate-400">
             Monitor and manage powerplant permit validity in real time
           </p>
         </div>
@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ onAddPermit, onExportCSV, onImpo
 
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-on-surface dark:bg-surface-container-high dark:border-outline dark:hover:bg-surface-container-highest flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
         >
           <Upload className="w-4 h-4" />
           <span>Import CSV</span>
@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({ onAddPermit, onExportCSV, onImpo
 
         <button
           onClick={onExportCSV}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-on-surface dark:bg-surface-container-high dark:border-outline dark:hover:bg-surface-container-highest flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
         >
           <Download className="w-4 h-4" />
           <span>Export CSV</span>
@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({ onAddPermit, onExportCSV, onImpo
 
         <button
           onClick={onAddPermit}
-          className="px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-on-primary dark:bg-primary dark:hover:bg-primary/90 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+          className="px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-white dark:bg-indigo-600 dark:hover:bg-indigo-500 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
         >
           <Plus className="w-4 h-4" />
           <span>Add Permit</span>
@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({ onAddPermit, onExportCSV, onImpo
         <div className="relative ml-1">
           <button
             onClick={() => setIsProfileOpen((prev) => !prev)}
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-surface-container-high border border-gray-200 dark:border-outline text-gray-500 dark:text-on-surface-variant hover:ring-2 hover:ring-brand-500 dark:hover:ring-primary focus:outline-none transition-all cursor-pointer"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-300 hover:ring-2 hover:ring-brand-500 dark:hover:ring-indigo-500 focus:outline-none transition-all cursor-pointer"
             aria-label="User profile menu"
           >
             <User className="w-4 h-4" />
