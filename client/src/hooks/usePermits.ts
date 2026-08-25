@@ -180,17 +180,24 @@ export function usePermits() {
     if (table.length < 2) return 0;
 
     const header = table[0].map((h) => h.trim().toLowerCase());
-    const colIndex = (name: string) => header.indexOf(name);
+    const findCol = (...names: string[]) => {
+      for (const name of names) {
+        const idx = header.indexOf(name.toLowerCase());
+        if (idx !== -1) return idx;
+      }
+      return -1;
+    };
+
     const col = {
-      plant: colIndex('powerplant name'),
-      environmental_law: colIndex('environmental law'),
-      description: colIndex('description'),
-      permit: colIndex('permit'),
-      unit_coverage: colIndex('unit / coverage'),
-      permit_no: colIndex('permit no.') !== -1 ? colIndex('permit no.') : colIndex('permit no'),
-      date_issued: colIndex('date issued'),
-      expiry: colIndex('expiry date'),
-      remarks: colIndex('remarks'),
+      plant: findCol('powerplant name', 'powerplant', 'plant name', 'plant'),
+      environmental_law: findCol('environmental law', 'law', 'environmental_law'),
+      description: findCol('description', 'desc'),
+      permit: findCol('permit', 'permit type', 'permit_type'),
+      unit_coverage: findCol('unit / coverage', 'unit coverage', 'coverage', 'unit_coverage', 'unit'),
+      permit_no: findCol('permit no.', 'permit no', 'permit_no', 'permit_number', 'permit number'),
+      date_issued: findCol('date issued', 'date_issued', 'issued date', 'issued_date', 'issued'),
+      expiry: findCol('expiry date', 'expiry_date', 'expiration date', 'expiration_date', 'expiry', 'expires'),
+      remarks: findCol('remarks', 'remark', 'notes', 'status remarks'),
     };
 
     if (col.plant === -1 && col.permit === -1) {
@@ -227,16 +234,28 @@ export function usePermits() {
     }
 
     if (newItems.length > 0) {
-      let successCount = 0;
-      for (const item of newItems) {
-        try {
-          await addPermit(item);
-          successCount++;
-        } catch (e) {
-          console.error("Failed to import row", item, e);
-        }
+      const response = await fetch(`${API_BASE}/permits/batch-import`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ permits: newItems }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to import permits via batch');
       }
-      return successCount;
+
+      const resData = await response.json();
+      const importedPermits: Permit[] = (resData.permits || []).map((p: any) => ({
+        ...p,
+        id: p.permit_id ?? p.id,
+      }));
+
+      setPermits((prev) => [...importedPermits, ...prev]);
+      return importedPermits.length;
     }
     return 0;
   };

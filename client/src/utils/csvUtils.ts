@@ -49,7 +49,7 @@ export function exportPermitsToCSV(permits: Permit[]): boolean {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `powerplant_permits_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `permits_${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
   return true;

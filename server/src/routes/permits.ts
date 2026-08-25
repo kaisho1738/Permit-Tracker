@@ -85,6 +85,51 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
+// POST batch import permits for authenticated user
+router.post('/batch-import', async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: 'User ID missing from authentication' });
+    }
+
+    const { permits } = req.body;
+    if (!Array.isArray(permits) || permits.length === 0) {
+      return res.status(400).json({ error: 'Expected a non-empty array of permits in request body' });
+    }
+
+    // 1. Ensure user profile exists in public.users to prevent FK constraint error
+    const { error: userErr } = await supabase.from('users').upsert([
+      { user_id: userId, email: req.user?.email }
+    ], { onConflict: 'user_id' });
+    if (userErr) {
+      console.warn('[POST /api/permits/batch-import] Could not auto-upsert public.users record:', userErr);
+    }
+
+    // 2. Build clean payload matching database columns for each permit
+    const payloads = permits.map((item) => mapToDbPayload(item, userId));
+
+    const { data, error } = await supabase
+      .from('permits')
+      .insert(payloads)
+      .select();
+
+    if (error) {
+      console.error('[POST /api/permits/batch-import] Supabase Batch Insert Error:', error);
+      return res.status(500).json({ error: error.message, details: error });
+    }
+
+    const mappedPermits = (data || []).map(mapToFrontend);
+    return res.status(201).json({
+      count: mappedPermits.length,
+      permits: mappedPermits,
+    });
+  } catch (err: any) {
+    console.error('[POST /api/permits/batch-import] Server Exception:', err);
+    return res.status(500).json({ error: err.message || 'Internal server error' });
+  }
+});
+
 // POST create permit for authenticated user
 router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   try {
