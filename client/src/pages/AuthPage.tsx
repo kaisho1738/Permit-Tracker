@@ -4,7 +4,6 @@ import { supabase } from '../lib/supabase';
 import { useTheme } from '../context/ThemeContext';
 import {
   ShieldCheck,
-  CheckCircle2,
   Mail,
   Lock,
   ArrowRight,
