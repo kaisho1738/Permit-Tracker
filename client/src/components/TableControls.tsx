@@ -54,16 +54,29 @@ export const TableControls: React.FC<TableControlsProps> = ({
         </button>
 
         <button
-          onClick={() => onStatusFilterChange('red')}
+          onClick={() => onStatusFilterChange('rose')}
           className={`px-4 py-2 text-sm font-medium rounded-full flex items-center gap-2 transition-all cursor-pointer ${
-            statusFilter === 'red'
+            statusFilter === 'rose'
               ? 'text-white bg-gray-900 dark:bg-indigo-600 dark:text-white shadow-xs'
               : 'text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700'
           }`}
         >
-          <div className="w-2 h-2 rounded-full bg-danger-500 dark:bg-rose-500" />
-          <span>Critical / Expired</span>
-          <span className="font-mono text-xs opacity-80">{counts.red}</span>
+          <div className="w-2 h-2 rounded-full bg-rose-500" />
+          <span>Expired</span>
+          <span className="font-mono text-xs opacity-80">{counts.rose}</span>
+        </button>
+
+        <button
+          onClick={() => onStatusFilterChange('orange')}
+          className={`px-4 py-2 text-sm font-medium rounded-full flex items-center gap-2 transition-all cursor-pointer ${
+            statusFilter === 'orange'
+              ? 'text-white bg-gray-900 dark:bg-indigo-600 dark:text-white shadow-xs'
+              : 'text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700'
+          }`}
+        >
+          <div className="w-2 h-2 rounded-full bg-orange-500" />
+          <span>Critical</span>
+          <span className="font-mono text-xs opacity-80">{counts.orange}</span>
         </button>
 
         <button
@@ -74,7 +87,7 @@ export const TableControls: React.FC<TableControlsProps> = ({
               : 'text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700'
           }`}
         >
-          <div className="w-2 h-2 rounded-full bg-warning-500 dark:bg-amber-500" />
+          <div className="w-2 h-2 rounded-full bg-amber-500" />
           <span>Expiring Soon</span>
           <span className="font-mono text-xs opacity-80">{counts.amber}</span>
         </button>
@@ -87,7 +100,7 @@ export const TableControls: React.FC<TableControlsProps> = ({
               : 'text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700'
           }`}
         >
-          <div className="w-2 h-2 rounded-full bg-success-500 dark:bg-emerald-500" />
+          <div className="w-2 h-2 rounded-full bg-emerald-500" />
           <span>Safe</span>
           <span className="font-mono text-xs opacity-80">{counts.green}</span>
         </button>

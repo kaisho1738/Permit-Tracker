@@ -58,7 +58,7 @@ export function usePermits() {
 
   // Compute status counts across all permits
   const statusCounts = useMemo<StatusCounts>(() => {
-    const counts = { total: permits.length, green: 0, amber: 0, red: 0, gray: 0 };
+    const counts: StatusCounts = { total: permits.length, green: 0, amber: 0, orange: 0, rose: 0, gray: 0 };
     permits.forEach((p) => {
       const s = getStatus(getMonthsDiff(p.expiry));
       counts[s]++;

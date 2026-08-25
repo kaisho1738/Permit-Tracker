@@ -1,4 +1,4 @@
-export type StatusType = 'green' | 'amber' | 'red' | 'gray';
+export type StatusType = 'green' | 'amber' | 'orange' | 'rose' | 'gray';
 
 export interface Permit {
   id: number;
@@ -17,12 +17,13 @@ export interface Permit {
 
 export type SortField = 'plant' | 'environmental_law' | 'permit' | 'date_issued' | 'expiry';
 export type SortDirection = 'asc' | 'desc';
-export type FilterStatus = 'all' | 'red' | 'amber' | 'green';
+export type FilterStatus = 'all' | 'rose' | 'orange' | 'amber' | 'green';
 
 export interface StatusCounts {
   total: number;
   green: number;
   amber: number;
-  red: number;
+  orange: number;
+  rose: number;
   gray: number;
 }

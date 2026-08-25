@@ -48,7 +48,7 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
                 <span
                   className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border shrink-0 ${meta.badgeClass}`}
                 >
-                  {meta.label.replace(' / Expired', '')}
+                  {meta.label}
                 </span>
               </li>
             );

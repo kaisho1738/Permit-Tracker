@@ -6,9 +6,10 @@ interface StatusBreakdownProps {
 }
 
 export const StatusBreakdown: React.FC<StatusBreakdownProps> = ({ counts }) => {
-  const { total, green, amber, red, gray } = counts;
+  const { total, green, amber, orange, rose, gray } = counts;
 
-  const redPct = total > 0 ? (red / total) * 100 : 0;
+  const rosePct = total > 0 ? (rose / total) * 100 : 0;
+  const orangePct = total > 0 ? (orange / total) * 100 : 0;
   const amberPct = total > 0 ? (amber / total) * 100 : 0;
   const greenPct = total > 0 ? (green / total) * 100 : 0;
   const grayPct = total > 0 ? (gray / total) * 100 : 0;
@@ -25,17 +26,22 @@ export const StatusBreakdown: React.FC<StatusBreakdownProps> = ({ counts }) => {
       </div>
       <div className="h-3 w-full bg-gray-200 dark:bg-slate-800 rounded-full flex overflow-hidden">
         <div
-          className="bg-danger-500 dark:bg-rose-500 h-full transition-all duration-300"
-          style={{ width: `${redPct}%` }}
-          title={`Critical / Expired: ${red} (${Math.round(redPct)}%)`}
+          className="bg-rose-500 h-full transition-all duration-300"
+          style={{ width: `${rosePct}%` }}
+          title={`Expired: ${rose} (${Math.round(rosePct)}%)`}
         />
         <div
-          className="bg-warning-500 dark:bg-amber-500 h-full transition-all duration-300"
+          className="bg-orange-500 h-full transition-all duration-300"
+          style={{ width: `${orangePct}%` }}
+          title={`Critical: ${orange} (${Math.round(orangePct)}%)`}
+        />
+        <div
+          className="bg-amber-500 h-full transition-all duration-300"
           style={{ width: `${amberPct}%` }}
           title={`Expiring Soon: ${amber} (${Math.round(amberPct)}%)`}
         />
         <div
-          className="bg-success-500 dark:bg-emerald-500 h-full transition-all duration-300"
+          className="bg-emerald-500 h-full transition-all duration-300"
           style={{ width: `${greenPct}%` }}
           title={`Safe: ${green} (${Math.round(greenPct)}%)`}
         />

@@ -18,8 +18,8 @@ export function getMonthsDiff(expiryDateStr: string): number | null {
  */
 export function getStatus(months: number | null): StatusType {
   if (months == null) return 'gray';
-  if (months < 0) return 'red';
-  if (months < 3) return 'red';
+  if (months < 0) return 'rose';
+  if (months < 3) return 'orange';
   if (months < 6) return 'amber';
   return 'green';
 }
@@ -57,22 +57,29 @@ export function getStatusMeta(status: StatusType): StatusMetadata {
       return {
         label: 'Safe',
         code: '[GREEN]',
-        badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/80',
-        dotClass: 'bg-emerald-500 dark:bg-emerald-400',
+        badgeClass: 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/80',
+        dotClass: 'bg-emerald-600 dark:bg-emerald-400',
       };
     case 'amber':
       return {
         label: 'Expiring Soon',
-        code: '[ORANGE]',
-        badgeClass: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/80',
+        code: '[YELLOW]',
+        badgeClass: 'bg-amber-50 text-amber-500 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/80',
         dotClass: 'bg-amber-500 dark:bg-amber-400',
       };
-    case 'red':
+    case 'orange':
       return {
-        label: 'Critical / Expired',
+        label: 'Critical (< 3 Months)',
+        code: '[ORANGE]',
+        badgeClass: 'bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-950/60 dark:text-orange-400 dark:border-orange-800/80',
+        dotClass: 'bg-orange-600 dark:bg-orange-400',
+      };
+    case 'rose':
+      return {
+        label: 'Expired',
         code: '[RED]',
-        badgeClass: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/80',
-        dotClass: 'bg-rose-500 dark:bg-rose-400',
+        badgeClass: 'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/80',
+        dotClass: 'bg-rose-600 dark:bg-rose-400',
       };
     case 'gray':
     default:

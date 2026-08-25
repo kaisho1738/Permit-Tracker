@@ -273,7 +273,7 @@ export const AuthPage: React.FC = () => {
           {/* Footer Text */}
           <div className="mt-6 pt-5 border-t border-surface-variant dark:border-slate-800 w-full text-center">
             <p className="text-[11px] text-on-surface-variant dark:text-slate-500">
-              Powered by Permit Tracker Auth Service
+              Track your permits anytime, anywhere
             </p>
           </div>
         </div>
