@@ -29,7 +29,10 @@ export function usePermits() {
           'Authorization': `Bearer ${session.access_token}`
         }
       });
-      if (!response.ok) throw new Error('Failed to fetch permits');
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to fetch permits');
+      }
       const data = await response.json();
       const mappedPermits = data.permits.map((p: any) => ({
         ...p,
@@ -141,7 +144,10 @@ export function usePermits() {
         },
         body: JSON.stringify(data)
       });
-      if (!response.ok) throw new Error('Failed to create permit');
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to create permit');
+      }
       const resData = await response.json();
       const newPermit = { ...resData.permit, id: resData.permit.permit_id };
       setPermits((prev) => [newPermit, ...prev]);
@@ -162,7 +168,10 @@ export function usePermits() {
         },
         body: JSON.stringify(data)
       });
-      if (!response.ok) throw new Error('Failed to update permit');
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to update permit');
+      }
       const resData = await response.json();
       const updatedPermit = { ...resData.permit, id: resData.permit.permit_id };
       setPermits((prev) => prev.map((p) => (p.id === id ? updatedPermit : p)));
@@ -181,7 +190,10 @@ export function usePermits() {
           'Authorization': `Bearer ${session.access_token}`
         }
       });
-      if (!response.ok) throw new Error('Failed to delete permit');
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to delete permit');
+      }
       setPermits((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error(err);
@@ -269,8 +281,8 @@ export function usePermits() {
       });
 
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || 'Failed to import permits via batch');
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to import permits via batch');
       }
 
       const resData = await response.json();
