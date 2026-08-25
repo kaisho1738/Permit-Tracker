@@ -1,14 +1,20 @@
 import React, { useState, useRef } from 'react';
-import { FileText, Upload, Download, Plus, User } from 'lucide-react';
+import { FileText, Upload, Download, Plus, User, Loader2 } from 'lucide-react';
 import { ProfileDropdown } from './ProfileDropdown';
 
 interface HeaderProps {
+  isImporting?: boolean;
   onAddPermit: () => void;
   onExportCSV: () => void;
   onImportCSV: (file: File) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onAddPermit, onExportCSV, onImportCSV }) => {
+export const Header: React.FC<HeaderProps> = ({
+  isImporting = false,
+  onAddPermit,
+  onExportCSV,
+  onImportCSV,
+}) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,11 +55,16 @@ export const Header: React.FC<HeaderProps> = ({ onAddPermit, onExportCSV, onImpo
         />
 
         <button
+          disabled={isImporting}
           onClick={() => fileInputRef.current?.click()}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 flex items-center gap-2 transition-all cursor-pointer shadow-xs disabled:opacity-50"
         >
-          <Upload className="w-4 h-4" />
-          <span>Import CSV</span>
+          {isImporting ? (
+            <Loader2 className="w-4 h-4 animate-spin text-gray-500 dark:text-slate-300" />
+          ) : (
+            <Upload className="w-4 h-4" />
+          )}
+          <span>{isImporting ? 'Importing...' : 'Import CSV'}</span>
         </button>
 
         <button

@@ -58,6 +58,11 @@ const Dashboard: React.FC = () => {
     updatePermit,
     deletePermit,
     importCSVData,
+    loading,
+    isAdding,
+    isUpdating,
+    deletingId,
+    isImporting,
   } = usePermits();
 
   const [modalState, setModalState] = useState<{
@@ -166,6 +171,7 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-[#f9fafb] text-gray-800 dark:bg-[#0b0f19] dark:text-[#f0f1f2] transition-colors duration-200">
       {/* Header */}
       <Header
+        isImporting={isImporting}
         onAddPermit={handleOpenAddModal}
         onExportCSV={handleExportCSV}
         onImportCSV={handleImportCSV}
@@ -203,6 +209,8 @@ const Dashboard: React.FC = () => {
             {/* Main Table */}
             <PermitTable
               permits={paginatedPermits}
+              isLoading={loading}
+              deletingId={deletingId}
               onViewRemarks={handleViewRemarks}
               onDeletePermit={handleDeletePermit}
               onOpenAddModal={handleOpenAddModal}
@@ -247,6 +255,7 @@ const Dashboard: React.FC = () => {
       <PermitModal
         isOpen={modalState.isOpen}
         permit={modalState.permit}
+        isSaving={isAdding || isUpdating}
         onClose={handleCloseModal}
         onSave={handleSavePermit}
       />

@@ -9,6 +9,10 @@ const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://
 export function usePermits() {
   const [permits, setPermits] = useState<Permit[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdding, setIsAdding] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -135,6 +139,7 @@ export function usePermits() {
 
   const addPermit = async (data: Omit<Permit, 'id' | 'permit_id'>) => {
     if (!session?.access_token) return;
+    setIsAdding(true);
     try {
       const response = await fetch(`${API_BASE}/permits`, {
         method: 'POST',
@@ -154,11 +159,14 @@ export function usePermits() {
     } catch (err) {
       console.error(err);
       throw err;
+    } finally {
+      setIsAdding(false);
     }
   };
 
   const updatePermit = async (id: number, data: Omit<Permit, 'id' | 'permit_id'>) => {
     if (!session?.access_token) return;
+    setIsUpdating(true);
     try {
       const response = await fetch(`${API_BASE}/permits/${id}`, {
         method: 'PUT',
@@ -178,11 +186,14 @@ export function usePermits() {
     } catch (err) {
       console.error(err);
       throw err;
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   const deletePermit = async (id: number) => {
     if (!session?.access_token) return;
+    setDeletingId(id);
     try {
       const response = await fetch(`${API_BASE}/permits/${id}`, {
         method: 'DELETE',
@@ -198,6 +209,8 @@ export function usePermits() {
     } catch (err) {
       console.error(err);
       throw err;
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -212,89 +225,96 @@ export function usePermits() {
 
   const importCSVData = async (csvText: string): Promise<number> => {
     if (!session?.access_token) return 0;
+    setIsImporting(true);
+    try {
+      const table = parseCSVText(csvText);
+      if (table.length < 2) return 0;
 
-    const table = parseCSVText(csvText);
-    if (table.length < 2) return 0;
+      const header = table[0].map((h) => h.trim().toLowerCase());
+      const findCol = (...names: string[]) => {
+        for (const name of names) {
+          const idx = header.indexOf(name.toLowerCase());
+          if (idx !== -1) return idx;
+        }
+        return -1;
+      };
 
-    const header = table[0].map((h) => h.trim().toLowerCase());
-    const findCol = (...names: string[]) => {
-      for (const name of names) {
-        const idx = header.indexOf(name.toLowerCase());
-        if (idx !== -1) return idx;
-      }
-      return -1;
-    };
+      const col = {
+        plant: findCol('powerplant name', 'powerplant', 'plant name', 'plant'),
+        environmental_law: findCol('environmental law', 'law', 'environmental_law'),
+        description: findCol('description', 'desc'),
+        permit: findCol('permit', 'permit type', 'permit_type'),
+        unit_coverage: findCol('unit / coverage', 'unit coverage', 'coverage', 'unit_coverage', 'unit'),
+        permit_no: findCol('permit no.', 'permit no', 'permit_no', 'permit_number', 'permit number'),
+        date_issued: findCol('date issued', 'date_issued', 'issued date', 'issued_date', 'issued'),
+        expiry: findCol('expiry date', 'expiry_date', 'expiration date', 'expiration_date', 'expiry', 'expires'),
+        remarks: findCol('remarks', 'remark', 'notes', 'status remarks'),
+      };
 
-    const col = {
-      plant: findCol('powerplant name', 'powerplant', 'plant name', 'plant'),
-      environmental_law: findCol('environmental law', 'law', 'environmental_law'),
-      description: findCol('description', 'desc'),
-      permit: findCol('permit', 'permit type', 'permit_type'),
-      unit_coverage: findCol('unit / coverage', 'unit coverage', 'coverage', 'unit_coverage', 'unit'),
-      permit_no: findCol('permit no.', 'permit no', 'permit_no', 'permit_number', 'permit number'),
-      date_issued: findCol('date issued', 'date_issued', 'issued date', 'issued_date', 'issued'),
-      expiry: findCol('expiry date', 'expiry_date', 'expiration date', 'expiration_date', 'expiry', 'expires'),
-      remarks: findCol('remarks', 'remark', 'notes', 'status remarks'),
-    };
-
-    if (col.plant === -1 && col.permit === -1) {
-      throw new Error("CSV headers don't match expected permit format");
-    }
-
-    const get = (r: string[], key: keyof typeof col) =>
-      col[key] > -1 && r[col[key]] !== undefined ? r[col[key]].trim() : '';
-
-    const newItems: Omit<Permit, 'id' | 'permit_id'>[] = [];
-
-    for (let i = 1; i < table.length; i++) {
-      const r = table[i];
-      if (!r || r.every((c) => (c || '').trim() === '')) continue;
-
-      const expiry = normalizeDateStr(get(r, 'expiry'));
-      const date_issued = normalizeDateStr(get(r, 'date_issued'));
-      const remarks = get(r, 'remarks').replace(/^\[(GREEN|ORANGE|RED|GRAY)\]\s*/i, '');
-      const autoText = getRemarks(getMonthsDiff(expiry));
-      const remarksAuto = remarks === '' || remarks === autoText;
-
-      newItems.push({
-        plant: get(r, 'plant'),
-        environmental_law: get(r, 'environmental_law'),
-        description: get(r, 'description'),
-        permit: get(r, 'permit'),
-        unit_coverage: get(r, 'unit_coverage'),
-        permit_no: get(r, 'permit_no'),
-        date_issued,
-        expiry,
-        remarks: remarksAuto ? autoText : remarks,
-        remarksAuto,
-      });
-    }
-
-    if (newItems.length > 0) {
-      const response = await fetch(`${API_BASE}/permits/batch-import`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ permits: newItems }),
-      });
-
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText || 'Failed to import permits via batch');
+      if (col.plant === -1 && col.permit === -1) {
+        throw new Error("CSV headers don't match expected permit format");
       }
 
-      const resData = await response.json();
-      const importedPermits: Permit[] = (resData.permits || []).map((p: any) => ({
-        ...p,
-        id: p.permit_id ?? p.id,
-      }));
+      const get = (r: string[], key: keyof typeof col) =>
+        col[key] > -1 && r[col[key]] !== undefined ? r[col[key]].trim() : '';
 
-      setPermits((prev) => [...importedPermits, ...prev]);
-      return importedPermits.length;
+      const newItems: Omit<Permit, 'id' | 'permit_id'>[] = [];
+
+      for (let i = 1; i < table.length; i++) {
+        const r = table[i];
+        if (!r || r.every((c) => (c || '').trim() === '')) continue;
+
+        const expiry = normalizeDateStr(get(r, 'expiry'));
+        const date_issued = normalizeDateStr(get(r, 'date_issued'));
+        const remarks = get(r, 'remarks').replace(/^\[(GREEN|ORANGE|RED|GRAY)\]\s*/i, '');
+        const autoText = getRemarks(getMonthsDiff(expiry));
+        const remarksAuto = remarks === '' || remarks === autoText;
+
+        newItems.push({
+          plant: get(r, 'plant'),
+          environmental_law: get(r, 'environmental_law'),
+          description: get(r, 'description'),
+          permit: get(r, 'permit'),
+          unit_coverage: get(r, 'unit_coverage'),
+          permit_no: get(r, 'permit_no'),
+          date_issued,
+          expiry,
+          remarks: remarksAuto ? autoText : remarks,
+          remarksAuto,
+        });
+      }
+
+      if (newItems.length > 0) {
+        const response = await fetch(`${API_BASE}/permits/batch-import`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ permits: newItems }),
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(errText || 'Failed to import permits via batch');
+        }
+
+        const resData = await response.json();
+        const importedPermits: Permit[] = (resData.permits || []).map((p: any) => ({
+          ...p,
+          id: p.permit_id ?? p.id,
+        }));
+
+        setPermits((prev) => [...importedPermits, ...prev]);
+        return importedPermits.length;
+      }
+      return 0;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    } finally {
+      setIsImporting(false);
     }
-    return 0;
   };
 
   const setSort = (field: SortField, dir: SortDirection) => {
@@ -325,6 +345,10 @@ export function usePermits() {
     deletePermit,
     importCSVData,
     loading,
+    isAdding,
+    isUpdating,
+    deletingId,
+    isImporting,
     error,
   };
 }

@@ -11,7 +11,9 @@ import {
   Sun,
   Moon,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Database,
+  Loader2
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
@@ -21,6 +23,7 @@ export const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [signupStatus, setSignupStatus] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -33,8 +36,16 @@ export const AuthPage: React.FC = () => {
     setSuccessMsg(null);
     setLoading(true);
 
+    if (isSignUp) {
+      setSignupStatus('Creating your secure credentials...');
+    }
+
     try {
       const endpoint = isSignUp ? `${API_BASE}/auth/register` : `${API_BASE}/auth/login`;
+
+      if (isSignUp) {
+        setSignupStatus('Registering account with authentication service...');
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -59,23 +70,31 @@ export const AuthPage: React.FC = () => {
         throw new Error(data.error || 'Authentication failed');
       }
 
+      if (isSignUp) {
+        setSignupStatus('Setting up database profile & permissions...');
+      }
+
       // Hydrate Supabase client session if session returned
       if (data.session) {
         await supabase.auth.setSession(data.session);
       }
 
       if (isSignUp) {
+        setSignupStatus('Finalizing workspace and redirecting...');
         setSuccessMsg('Account created successfully! Redirecting...');
         setTimeout(() => {
           navigate('/');
-        }, 1500);
+        }, 1200);
       } else {
         navigate('/');
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'An error occurred during authentication.');
-    } finally {
       setLoading(false);
+    } finally {
+      if (!isSignUp) {
+        setLoading(false);
+      }
     }
   };
 
@@ -108,7 +127,31 @@ export const AuthPage: React.FC = () => {
 
       {/* Main Login Card */}
       <main className="w-full max-w-[440px] px-4 relative z-10 my-8">
-        <div className="bg-surface-container-lowest dark:bg-[#131927]/90 dark:border-slate-800/90 rounded-2xl shadow-xl border border-surface-variant backdrop-blur-xl p-8 flex flex-col items-center transition-colors duration-300">
+        <div className="bg-surface-container-lowest dark:bg-[#131927]/90 dark:border-slate-800/90 rounded-2xl shadow-xl border border-surface-variant backdrop-blur-xl p-8 flex flex-col items-center transition-colors duration-300 relative overflow-hidden">
+          {/* Dedicated Signup Loading Overlay */}
+          {loading && isSignUp && (
+            <div className="absolute inset-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-md z-30 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
+              <div className="relative w-16 h-16 flex items-center justify-center mb-5">
+                <div className="w-16 h-16 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 animate-ping absolute" />
+                <div className="w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-inner">
+                  <Database className="w-6 h-6 animate-pulse" />
+                </div>
+                <Loader2 className="w-16 h-16 text-indigo-600 dark:text-indigo-400 animate-spin absolute -top-0 -left-0 opacity-80" />
+              </div>
+
+              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">
+                Provisioning Account
+              </h3>
+              <p className="text-xs text-gray-600 dark:text-slate-400 max-w-[280px] leading-relaxed mb-5">
+                {signupStatus || 'Setting up your database profile and secure workspace...'}
+              </p>
+
+              {/* Progress track */}
+              <div className="w-48 h-1.5 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden relative">
+                <div className="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full animate-pulse w-full" />
+              </div>
+            </div>
+          )}
 
           {/* Logo & Header */}
           <div className="flex flex-col items-center mb-6 w-full">

@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { Moon, Sun, Download, Plus, ShieldCheck, User, LogOut } from 'lucide-react';
+import { Moon, Sun, Download, Plus, ShieldCheck, User, LogOut, UserX, Loader2 } from 'lucide-react';
 
 interface ProfileDropdownProps {
   isOpen: boolean;
@@ -17,7 +17,8 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   onAddPermit,
 }) => {
   const { theme, toggleTheme } = useTheme();
-  const { user, username, signOut } = useAuth();
+  const { user, username, signOut, deleteAccount } = useAuth();
+  const [isDeletingUser, setIsDeletingUser] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,6 +35,23 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to permanently delete your account and all associated permit data? This action cannot be undone.'
+    );
+    if (!confirmed) return;
+
+    try {
+      setIsDeletingUser(true);
+      await deleteAccount();
+      onClose();
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete account.');
+    } finally {
+      setIsDeletingUser(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -95,7 +113,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
             onExport();
             onClose();
           }}
-          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-left"
+          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-left cursor-pointer"
         >
           <Download className="w-4 h-4 text-gray-400 dark:text-slate-400" />
           <span>Export All Permit Data</span>
@@ -105,7 +123,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
             onAddPermit();
             onClose();
           }}
-          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-left"
+          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-left cursor-pointer"
         >
           <Plus className="w-4 h-4 text-gray-400 dark:text-slate-400" />
           <span>Create New Permit Entry</span>
@@ -116,10 +134,23 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
             onClose();
             await signOut();
           }}
-          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40 rounded-lg transition-colors text-left mt-1"
+          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-lg transition-colors text-left mt-1 cursor-pointer"
         >
-          <LogOut className="w-4 h-4 text-rose-500" />
+          <LogOut className="w-4 h-4 text-gray-500 dark:text-slate-400" />
           <span>Sign Out</span>
+        </button>
+
+        <button
+          onClick={handleDeleteAccount}
+          disabled={isDeletingUser}
+          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40 rounded-lg transition-colors text-left mt-1 cursor-pointer disabled:opacity-50"
+        >
+          {isDeletingUser ? (
+            <Loader2 className="w-4 h-4 text-rose-500 animate-spin" />
+          ) : (
+            <UserX className="w-4 h-4 text-rose-500" />
+          )}
+          <span>{isDeletingUser ? 'Deleting Account...' : 'Delete Account'}</span>
         </button>
 
         <div className="pt-1.5 text-[11px] text-gray-400 dark:text-slate-500 flex items-center justify-center gap-1 border-t border-gray-100 dark:border-slate-800 mt-2">
@@ -130,4 +161,5 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
     </div>
   );
 };
+
 

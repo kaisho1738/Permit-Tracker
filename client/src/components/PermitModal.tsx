@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Permit } from '../types/permit';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { getMonthsDiff, getRemarks } from '../utils/dateUtils';
 
 interface PermitModalProps {
   isOpen: boolean;
   permit: Permit | null;
+  isSaving?: boolean;
   onClose: () => void;
-  onSave: (data: Omit<Permit, 'id' | 'permit_id'>) => void;
+  onSave: (data: Omit<Permit, 'id' | 'permit_id'>) => void | Promise<void>;
 }
 
 export const PermitModal: React.FC<PermitModalProps> = ({
   isOpen,
   permit,
+  isSaving = false,
   onClose,
   onSave,
 }) => {
@@ -76,7 +78,6 @@ export const PermitModal: React.FC<PermitModalProps> = ({
       remarks: computedRemarks,
       remarksAuto,
     });
-    onClose();
   };
 
   return (
@@ -89,7 +90,8 @@ export const PermitModal: React.FC<PermitModalProps> = ({
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+            disabled={isSaving}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5" />
           </button>
@@ -105,10 +107,11 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               <input
                 type="text"
                 required
+                disabled={isSaving}
                 value={plant}
                 onChange={(e) => setPlant(e.target.value)}
                 placeholder="e.g. Batangas Power Corp"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
               />
             </div>
 
@@ -119,10 +122,11 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               <input
                 type="text"
                 required
+                disabled={isSaving}
                 value={permitTitle}
                 onChange={(e) => setPermitTitle(e.target.value)}
                 placeholder="e.g. Permit to Operate"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
               />
             </div>
           </div>
@@ -134,10 +138,11 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               </label>
               <input
                 type="text"
+                disabled={isSaving}
                 value={environmentalLaw}
                 onChange={(e) => setEnvironmentalLaw(e.target.value)}
                 placeholder="e.g. Philippine Clean Water Act"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
               />
             </div>
 
@@ -147,10 +152,11 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               </label>
               <input
                 type="text"
+                disabled={isSaving}
                 value={permitNo}
                 onChange={(e) => setPermitNo(e.target.value)}
                 placeholder="e.g. XX-123-45-67890"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 font-mono focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 font-mono focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
               />
             </div>
           </div>
@@ -162,10 +168,11 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               </label>
               <input
                 type="text"
+                disabled={isSaving}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. WasteWater Discharge Permit"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
               />
             </div>
 
@@ -175,10 +182,11 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               </label>
               <input
                 type="text"
+                disabled={isSaving}
                 value={unitCoverage}
                 onChange={(e) => setUnitCoverage(e.target.value)}
                 placeholder="e.g. Oil Water Separator"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
               />
             </div>
           </div>
@@ -190,9 +198,10 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               </label>
               <input
                 type="date"
+                disabled={isSaving}
                 value={dateIssued}
                 onChange={(e) => setDateIssued(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
               />
             </div>
 
@@ -202,9 +211,10 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               </label>
               <input
                 type="date"
+                disabled={isSaving}
                 value={expiry}
                 onChange={(e) => setExpiry(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
               />
             </div>
           </div>
@@ -215,10 +225,11 @@ export const PermitModal: React.FC<PermitModalProps> = ({
             </label>
             <textarea
               rows={2}
+              disabled={isSaving}
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="Optional remarks (leave blank to auto-calculate from expiry date)"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none resize-none"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none resize-none disabled:opacity-60"
             />
           </div>
 
@@ -226,16 +237,19 @@ export const PermitModal: React.FC<PermitModalProps> = ({
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-slate-800 mt-6">
             <button
               type="button"
+              disabled={isSaving}
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-white dark:bg-indigo-600 dark:hover:bg-indigo-500 transition-colors shadow-sm cursor-pointer"
+              disabled={isSaving}
+              className="px-5 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-white dark:bg-indigo-600 dark:hover:bg-indigo-500 transition-colors shadow-sm cursor-pointer disabled:opacity-50 flex items-center gap-2"
             >
-              {permit ? 'Update Permit' : 'Save Permit'}
+              {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+              <span>{isSaving ? 'Saving...' : permit ? 'Update Permit' : 'Save Permit'}</span>
             </button>
           </div>
         </form>
@@ -243,3 +257,4 @@ export const PermitModal: React.FC<PermitModalProps> = ({
     </div>
   );
 };
+

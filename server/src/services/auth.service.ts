@@ -20,6 +20,7 @@ export class AuthService {
       const { error: profileError } = await AuthRepository.createUserProfile(data.user.id, email);
       if (profileError) {
         console.error('[AuthService] Error creating public user profile:', profileError);
+        throw new Error(profileError.message || 'Failed to initialize user database profile');
       }
     }
 
@@ -40,5 +41,15 @@ export class AuthService {
     }
 
     return data;
+  }
+
+  /**
+   * Deletes a user account.
+   */
+  static async deleteAccount(userId: string) {
+    if (!userId) {
+      throw new Error('User ID is required.');
+    }
+    return AuthRepository.deleteUser(userId);
   }
 }

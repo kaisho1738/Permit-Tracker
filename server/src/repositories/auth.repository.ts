@@ -45,5 +45,18 @@ export class AuthRepository {
       password,
     });
   }
+
+  /**
+   * Deletes a user from Supabase Auth and cleans up associated records.
+   */
+  static async deleteUser(userId: string) {
+    await supabase.from('permits').delete().eq('user_id', userId);
+    await supabase.from('users').delete().eq('user_id', userId);
+    const { data, error } = await supabase.auth.admin.deleteUser(userId);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
 }
 
