@@ -2,6 +2,10 @@
   "name": "powerplant-permit-tracker-workspace",
   "private": true,
   "version": "1.0.0",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "dev": "npm run dev --prefix client",
     "dev:all": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",

@@ -25,7 +25,11 @@ app.get('/api/health', (_req: Request, res: Response) => {
 app.use('/api/auth', authRouter);
 app.use('/api/permits', requireAuth, permitsRouter);
 
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server listening on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
 
