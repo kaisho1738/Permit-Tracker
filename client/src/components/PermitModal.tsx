@@ -18,7 +18,7 @@ export const PermitModal: React.FC<PermitModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const [plant, setPlant] = useState('');
+  const [company, setCompany] = useState('');
   const [environmentalLaw, setEnvironmentalLaw] = useState('');
   const [description, setDescription] = useState('');
   const [permitTitle, setPermitTitle] = useState('');
@@ -30,7 +30,7 @@ export const PermitModal: React.FC<PermitModalProps> = ({
 
   useEffect(() => {
     if (permit) {
-      setPlant(permit.plant || '');
+      setCompany(permit.company || '');
       setEnvironmentalLaw(permit.environmental_law || '');
       setDescription(permit.description || '');
       setPermitTitle(permit.permit || '');
@@ -40,7 +40,7 @@ export const PermitModal: React.FC<PermitModalProps> = ({
       setExpiry(permit.expiry || '');
       setRemarks(permit.remarks || '');
     } else {
-      setPlant('');
+      setCompany('');
       setEnvironmentalLaw('');
       setDescription('');
       setPermitTitle('');
@@ -57,7 +57,7 @@ export const PermitModal: React.FC<PermitModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!plant.trim() && !permitTitle.trim()) {
+    if (!company.trim() && !permitTitle.trim()) {
       alert('Please fill in at least the Company Name or Permit Title');
       return;
     }
@@ -66,7 +66,7 @@ export const PermitModal: React.FC<PermitModalProps> = ({
     const finalRemarks = remarks.trim() ? remarks : calculatedRemarks;
 
     onSave({
-      plant: plant.trim(),
+      company: company.trim(),
       environmental_law: environmentalLaw.trim(),
       description: description.trim(),
       permit: permitTitle.trim(),
@@ -107,8 +107,8 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 type="text"
                 required
                 disabled={isSaving}
-                value={plant}
-                onChange={(e) => setPlant(e.target.value)}
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
                 placeholder="e.g. Batangas Power Corp"
                 className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />

@@ -13,7 +13,7 @@ function mapToFrontend(p: any) {
     ...p,
     id: p.permit_id,
     permit_id: p.permit_id,
-    plant: p.powerplant ?? p.plant ?? '',
+    company: p.company ?? '',
     permit_no: p.permit_number ?? p.permit_no ?? '',
     expiry: p.expiry_date ?? p.expiry ?? '',
   };
@@ -26,8 +26,7 @@ function mapToDbPayload(body: any, userId?: string) {
   const {
     id,
     permit_id,
-    plant,
-    powerplant,
+    company,
     permit_no,
     permit_number,
     expiry,
@@ -39,7 +38,7 @@ function mapToDbPayload(body: any, userId?: string) {
 
   const payload: Record<string, any> = {
     ...rest,
-    powerplant: plant !== undefined ? plant : powerplant,
+    company: company !== undefined ? company : null,
     permit_number: permit_no !== undefined ? permit_no : permit_number,
     expiry_date: (expiry || expiry_date) ? (expiry || expiry_date) : null,
     date_issued: date_issued ? date_issued : null,

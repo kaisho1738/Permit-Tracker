@@ -74,7 +74,7 @@ export function usePermits() {
       .filter((r) => {
         if (!q) return true;
         return (
-          r.plant.toLowerCase().includes(q) ||
+          r.company.toLowerCase().includes(q) ||
           r.environmental_law.toLowerCase().includes(q) ||
           r.description.toLowerCase().includes(q) ||
           r.permit.toLowerCase().includes(q) ||
@@ -266,7 +266,7 @@ export function usePermits() {
       };
 
       const col = {
-        plant: findCol('company name', 'company', 'powerplant name', 'powerplant', 'plant name', 'plant'),
+        company: findCol('company name', 'company'),
         environmental_law: findCol('environmental law', 'law', 'environmental_law'),
         description: findCol('description', 'desc'),
         permit: findCol('permit', 'permit type', 'permit_type'),
@@ -277,7 +277,7 @@ export function usePermits() {
         remarks: findCol('remarks', 'remark', 'notes', 'status remarks'),
       };
 
-      if (col.plant === -1 && col.permit === -1) {
+      if (col.company === -1 && col.permit === -1) {
         throw new Error("CSV headers don't match expected permit format");
       }
 
@@ -297,7 +297,7 @@ export function usePermits() {
         const remarksAuto = remarks === '' || remarks === autoText;
 
         newItems.push({
-          plant: get(r, 'plant'),
+          company: get(r, 'company'),
           environmental_law: get(r, 'environmental_law'),
           description: get(r, 'description'),
           permit: get(r, 'permit'),

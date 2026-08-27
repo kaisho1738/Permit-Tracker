@@ -14,7 +14,7 @@ Each permit entry contains the following fields:
 
 | Field | Type | Input By | Description |
 |---|---|---|---|
-| Powerplant Name | Text | User | Name of the powerplant associated with the permit |
+| Company Name | Text | User | Name of the company associated with the permit |
 | Permit | Text | User | Permit type or reference number |
 | Expiry Date | Date | User | The date the permit expires |
 | Remarks | Computed | System | Auto-generated status label based on expiry date |

@@ -48,7 +48,7 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
               )}
             </div>
             <h2 className="text-lg sm:text-xl font-bold text-foreground">
-              {permit.plant || 'Untitled Company'}
+              {permit.company || 'Untitled Company'}
             </h2>
             <p className="text-sm font-medium text-primary mt-0.5">
               {permit.permit || 'Permit'}

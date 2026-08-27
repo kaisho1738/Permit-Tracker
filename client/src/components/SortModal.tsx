@@ -20,7 +20,7 @@ interface ColumnOption {
 
 const COLUMNS: ColumnOption[] = [
   {
-    id: 'plant',
+    id: 'company',
     label: 'Company Name',
     icon: <Building className="w-4 h-4" />,
     ascLabel: 'A to Z (Alphabetical)',

@@ -108,7 +108,7 @@ export const PermitTable: React.FC<PermitTableProps> = ({
                         Company
                       </span>
                       <h4 className="text-base font-bold text-foreground truncate group-hover:text-primary transition-colors">
-                        {row.plant || <span className="text-muted-foreground select-none font-normal">—</span>}
+                        {row.company || <span className="text-muted-foreground select-none font-normal">—</span>}
                       </h4>
                     </div>
                     <span
@@ -308,7 +308,7 @@ export const PermitTable: React.FC<PermitTableProps> = ({
                   )}
                   <td className="px-3.5 py-3.5">
                     <div className="text-foreground font-semibold text-sm">
-                      {row.plant || <span className="text-muted-foreground select-none font-normal">—</span>}
+                      {row.company || <span className="text-muted-foreground select-none font-normal">—</span>}
                     </div>
                     {row.environmental_law && (
                       <div className="text-muted-foreground text-xs mt-0.5 font-normal">

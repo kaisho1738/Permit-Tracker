@@ -20,7 +20,7 @@ interface TableControlsProps {
 }
 
 const SORT_LABELS: Record<SortField, { name: string; asc: string; desc: string }> = {
-  plant: { name: 'Company', asc: 'A–Z', desc: 'Z–A' },
+  company: { name: 'Company', asc: 'A–Z', desc: 'Z–A' },
   permit: { name: 'Permit Name', asc: 'A–Z', desc: 'Z–A' },
   expiry: { name: 'Expiry Date', asc: 'Earliest', desc: 'Latest' },
   date_issued: { name: 'Date Issued', asc: 'Oldest', desc: 'Newest' },
@@ -88,11 +88,10 @@ export const TableControls: React.FC<TableControlsProps> = ({
             <button
               type="button"
               onClick={() => onViewModeChange('cards')}
-              className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-all cursor-pointer ${
-                viewMode === 'cards'
+              className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-all cursor-pointer ${viewMode === 'cards'
                   ? 'bg-card text-foreground shadow-2xs font-semibold'
                   : 'text-muted-foreground hover:text-foreground'
-              }`}
+                }`}
               title="Cards View"
               aria-label="Cards View"
             >
@@ -102,11 +101,10 @@ export const TableControls: React.FC<TableControlsProps> = ({
             <button
               type="button"
               onClick={() => onViewModeChange('table')}
-              className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-all cursor-pointer ${
-                viewMode === 'table'
+              className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-all cursor-pointer ${viewMode === 'table'
                   ? 'bg-card text-foreground shadow-2xs font-semibold'
                   : 'text-muted-foreground hover:text-foreground'
-              }`}
+                }`}
               title="Table View"
               aria-label="Table View"
             >
