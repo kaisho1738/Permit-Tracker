@@ -3,7 +3,7 @@ export type StatusType = 'green' | 'amber' | 'orange' | 'rose' | 'gray';
 export interface Permit {
   id: number;
   permit_id?: number;
-  plant: string;
+  company: string;
   environmental_law: string;
   description: string;
   permit: string;
@@ -15,7 +15,7 @@ export interface Permit {
   remarksAuto?: boolean;
 }
 
-export type SortField = 'plant' | 'environmental_law' | 'permit' | 'date_issued' | 'expiry';
+export type SortField = 'company' | 'environmental_law' | 'permit' | 'date_issued' | 'expiry';
 export type SortDirection = 'asc' | 'desc';
 export type FilterStatus = 'all' | 'rose' | 'orange' | 'amber' | 'green';
 

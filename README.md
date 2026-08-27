@@ -18,7 +18,7 @@ The app runs entirely inside your browser as a single `.html` file. Your data is
 - **Live remarks** — Automatically calculates and displays how many months and days remain, or how long ago a permit expired
 - **Summary dashboard** — At-a-glance count of total, safe, expiring, and critical permits at the top of the page
 - **Inline editing** — Click directly on any cell to edit. No popups, no save buttons
-- **Search** — Filter permits instantly by powerplant name or permit type
+- **Search** — Filter permits instantly by company name or permit type
 - **Sortable columns** — Click any column header to sort ascending or descending
 - **Excel export** — Download all permit data as a color-coded `.xlsx` file, with Remarks and Status cells highlighted in their respective colors
 - **Auto-save** — Every change is saved to local storage immediately. Data survives page refreshes and browser restarts
@@ -42,7 +42,7 @@ The app runs entirely inside your browser as a single `.html` file. Your data is
 
 1. Click the **Add Permit** button in the top-right corner
 2. A new blank row will appear at the bottom of the table with the cursor ready in the first field
-3. Type the **Powerplant Name** (e.g. *Malaya Power Plant*)
+3. Type the **Company Name** (e.g. *Batangas Power Corp*)
 4. Press `Tab` to move to the **Permit** field and enter the permit type or reference number (e.g. *Permit to Operate*)
 5. Click the **Expiry Date** field and pick a date from the calendar picker
 6. The **Remarks** column will automatically update with the status badge and time remaining
@@ -63,13 +63,13 @@ Click the **×** button on the right side of the row you want to remove. A confi
 
 ### Searching
 
-Type in the **search bar** in the toolbar to filter rows. The search matches against both the Powerplant Name and the Permit columns. The row count in the toolbar updates to show how many results are visible.
+Type in the **search bar** in the toolbar to filter rows. The search matches against both the Company Name and the Permit columns. The row count in the toolbar updates to show how many results are visible.
 
 ---
 
 ### Sorting
 
-Click any column header (**Powerplant Name**, **Permit**, or **Expiry Date**) to sort the table by that column. Click the same header again to reverse the sort order. An arrow indicator (↑ or ↓) shows the current sort direction.
+Click any column header (**Company Name**, **Permit**, or **Expiry Date**) to sort the table by that column. Click the same header again to reverse the sort order. An arrow indicator (↑ or ↓) shows the current sort direction.
 
 The table defaults to sorting by **Expiry Date ascending** so the soonest-expiring permits always appear at the top.
 

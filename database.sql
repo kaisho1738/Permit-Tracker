@@ -11,7 +11,7 @@ CREATE TABLE public.users (
 CREATE TABLE public.permits (
   permit_id SERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES public.users(user_id) ON DELETE CASCADE,
-  powerplant VARCHAR,
+  company VARCHAR,
   environmental_law VARCHAR,
   description VARCHAR,
   permit VARCHAR,

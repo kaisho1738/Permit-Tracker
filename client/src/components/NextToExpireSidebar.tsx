@@ -239,7 +239,7 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
                           <Building2 className="w-3.5 h-3.5 shrink-0" />
-                          <span className="font-medium truncate">{permit.plant || 'Untitled Plant'}</span>
+                          <span className="font-medium truncate">{permit.company || 'Untitled Company'}</span>
                         </div>
                         <h4 className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
                           {permit.permit || 'Permit'}

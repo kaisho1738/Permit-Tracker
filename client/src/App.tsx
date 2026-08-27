@@ -152,7 +152,7 @@ const Dashboard: React.FC = () => {
   const handleDeletePermit = (id: number) => {
     const targetPermit = permits.find((p) => p.id === id);
     const itemName = targetPermit
-      ? `${targetPermit.plant ? `${targetPermit.plant} — ` : ''}${targetPermit.permit}`
+      ? `${targetPermit.company ? `${targetPermit.company} — ` : ''}${targetPermit.permit}`
       : undefined;
 
     setDeleteModalState({

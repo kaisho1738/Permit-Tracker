@@ -29,7 +29,7 @@ export function exportPermitsToCSV(permits: Permit[]): boolean {
     const remarksWithCode = `${statusMeta.code} ${remarks}`;
 
     return [
-      r.plant,
+      r.company,
       r.environmental_law,
       r.description,
       r.permit,
