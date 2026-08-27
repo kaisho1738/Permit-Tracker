@@ -42,6 +42,8 @@ const Dashboard: React.FC = () => {
     filteredPermits,
     paginatedPermits,
     upcomingPermits,
+    expireTargetDate,
+    setExpireTargetDate,
     statusCounts,
     searchQuery,
     setSearchQuery,
@@ -315,6 +317,8 @@ const Dashboard: React.FC = () => {
           onClose={() => setIsNextToExpireOpen(false)}
           permits={permits}
           onSelectFilter={setStatusFilter}
+          expireTargetDate={expireTargetDate}
+          setExpireTargetDate={setExpireTargetDate}
         />
       </main>
 

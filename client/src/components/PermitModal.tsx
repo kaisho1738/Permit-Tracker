@@ -52,6 +52,29 @@ export const PermitModal: React.FC<PermitModalProps> = ({
     }
   }, [permit, isOpen]);
 
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isSaving) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isSaving, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -80,11 +103,16 @@ export const PermitModal: React.FC<PermitModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-card text-card-foreground border border-border rounded-xl shadow-2xl max-w-xl w-full p-4 sm:p-6 transition-all duration-200 relative animate-in fade-in zoom-in-95">
+    <div
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !isSaving) onClose();
+      }}
+    >
+      <div className="bg-card text-card-foreground border border-border rounded-xl shadow-2xl max-w-xl w-full flex flex-col max-h-[92dvh] sm:max-h-[85vh] transition-all duration-200 relative animate-in fade-in zoom-in-95 my-auto overflow-hidden">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-border mb-5">
-          <h2 className="text-lg font-semibold text-foreground">
+        <div className="flex items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4 border-b border-border shrink-0 bg-card">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">
             {permit ? 'Edit Permit Details' : 'Add New Permit'}
           </h2>
           <button
@@ -97,143 +125,145 @@ export const PermitModal: React.FC<PermitModalProps> = ({
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-                Company Name *
-              </label>
-              <input
-                type="text"
-                required
-                disabled={isSaving}
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                placeholder="e.g. Batangas Power Corp"
-                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
-              />
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
+          <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1 min-h-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                  Company Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  disabled={isSaving}
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  placeholder="e.g. Batangas Power Corp"
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                  Permit Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  disabled={isSaving}
+                  value={permitTitle}
+                  onChange={(e) => setPermitTitle(e.target.value)}
+                  placeholder="e.g. Permit to Operate"
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                  Environmental Law
+                </label>
+                <input
+                  type="text"
+                  disabled={isSaving}
+                  value={environmentalLaw}
+                  onChange={(e) => setEnvironmentalLaw(e.target.value)}
+                  placeholder="e.g. Philippine Clean Water Act"
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                  Permit No.
+                </label>
+                <input
+                  type="text"
+                  disabled={isSaving}
+                  value={permitNo}
+                  onChange={(e) => setPermitNo(e.target.value)}
+                  placeholder="e.g. XX-123-45-67890"
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground font-mono focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  disabled={isSaving}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="e.g. WasteWater Discharge Permit"
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                  Unit / Coverage
+                </label>
+                <input
+                  type="text"
+                  disabled={isSaving}
+                  value={unitCoverage}
+                  onChange={(e) => setUnitCoverage(e.target.value)}
+                  placeholder="e.g. Oil Water Separator"
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                  Date Issued
+                </label>
+                <input
+                  type="date"
+                  disabled={isSaving}
+                  value={dateIssued}
+                  onChange={(e) => setDateIssued(e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                  Expiry Date
+                </label>
+                <input
+                  type="date"
+                  disabled={isSaving}
+                  value={expiry}
+                  onChange={(e) => setExpiry(e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-                Permit Title *
+                Remarks
               </label>
-              <input
-                type="text"
-                required
+              <textarea
+                rows={2}
                 disabled={isSaving}
-                value={permitTitle}
-                onChange={(e) => setPermitTitle(e.target.value)}
-                placeholder="e.g. Permit to Operate"
-                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+                placeholder="e.g., Pending for approval"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none resize-none disabled:opacity-60"
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-                Environmental Law
-              </label>
-              <input
-                type="text"
-                disabled={isSaving}
-                value={environmentalLaw}
-                onChange={(e) => setEnvironmentalLaw(e.target.value)}
-                placeholder="e.g. Philippine Clean Water Act"
-                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-                Permit No.
-              </label>
-              <input
-                type="text"
-                disabled={isSaving}
-                value={permitNo}
-                onChange={(e) => setPermitNo(e.target.value)}
-                placeholder="e.g. XX-123-45-67890"
-                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground font-mono focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-                Description
-              </label>
-              <input
-                type="text"
-                disabled={isSaving}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g. WasteWater Discharge Permit"
-                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-                Unit / Coverage
-              </label>
-              <input
-                type="text"
-                disabled={isSaving}
-                value={unitCoverage}
-                onChange={(e) => setUnitCoverage(e.target.value)}
-                placeholder="e.g. Oil Water Separator"
-                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-                Date Issued
-              </label>
-              <input
-                type="date"
-                disabled={isSaving}
-                value={dateIssued}
-                onChange={(e) => setDateIssued(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-                Expiry Date
-              </label>
-              <input
-                type="date"
-                disabled={isSaving}
-                value={expiry}
-                onChange={(e) => setExpiry(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
-              Remarks
-            </label>
-            <textarea
-              rows={2}
-              disabled={isSaving}
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              placeholder="e.g., Pending for approval"
-              className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none resize-none disabled:opacity-60"
-            />
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-border mt-6">
+          <div className="flex items-center justify-end gap-3 px-4 py-3 sm:px-6 sm:py-4 border-t border-border shrink-0 bg-muted/20">
             <button
               type="button"
               disabled={isSaving}

@@ -23,6 +23,14 @@ export function usePermits() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const PAGE_SIZE = 10;
 
+  const getDefaultExpireTargetDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 90);
+    return d.toISOString().split('T')[0];
+  };
+
+  const [expireTargetDate, setExpireTargetDate] = useState<string>(getDefaultExpireTargetDate);
+
   const { session } = useAuth();
 
   const fetchPermits = useCallback(async () => {
@@ -126,17 +134,23 @@ export function usePermits() {
     return filteredPermits.slice(start, start + PAGE_SIZE);
   }, [filteredPermits, currentPage]);
 
-  // 5 Upcoming Expirations
+  // Expiring permits within selected timeframe
   const upcomingPermits = useMemo(() => {
+    if (!expireTargetDate) return [];
+    const targetTime = new Date(expireTargetDate).setHours(23, 59, 59, 999);
+
     return permits
-      .filter((p) => Boolean(p.expiry))
+      .filter((p) => {
+        if (!p.expiry) return false;
+        const expTime = new Date(p.expiry).getTime();
+        return !isNaN(expTime) && expTime <= targetTime;
+      })
       .map((p) => ({
         permit: p,
         months: getMonthsDiff(p.expiry),
       }))
-      .sort((a, b) => new Date(a.permit.expiry).getTime() - new Date(b.permit.expiry).getTime())
-      .slice(0, 5);
-  }, [permits]);
+      .sort((a, b) => new Date(a.permit.expiry).getTime() - new Date(b.permit.expiry).getTime());
+  }, [permits, expireTargetDate]);
 
   const addPermit = async (data: Omit<Permit, 'id' | 'permit_id'>) => {
     if (!session?.access_token) return;
@@ -353,6 +367,8 @@ export function usePermits() {
     filteredPermits,
     paginatedPermits,
     upcomingPermits,
+    expireTargetDate,
+    setExpireTargetDate,
     statusCounts,
     searchQuery,
     setSearchQuery,
