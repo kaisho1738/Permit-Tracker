@@ -28,13 +28,13 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
       <div
-        className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-2xl max-w-lg w-full p-6 transition-all duration-200 relative text-gray-900 dark:text-slate-100"
+        className="bg-card text-card-foreground border border-border rounded-xl shadow-2xl max-w-lg w-full p-4 sm:p-6 transition-all duration-200 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-gray-100 dark:border-slate-800">
+        <div className="flex items-start justify-between pb-4 border-b border-border">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${meta.badgeClass}`}
               >
@@ -42,21 +42,21 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
                 {meta.label}
               </span>
               {isCustomRemarks && (
-                <span className="text-[11px] font-medium text-gray-500 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                   Custom Remark
                 </span>
               )}
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100">
-              {permit.plant || 'Untitled Plant'}
+            <h2 className="text-lg sm:text-xl font-bold text-foreground">
+              {permit.plant || 'Untitled Company'}
             </h2>
-            <p className="text-sm font-medium text-brand-600 dark:text-indigo-400 mt-0.5">
+            <p className="text-sm font-medium text-primary mt-0.5">
               {permit.permit || 'Permit'}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer shrink-0"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -64,85 +64,85 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
         </div>
 
         {/* Remarks Box */}
-        <div className="my-5 p-4 rounded-xl bg-[#faf9f6] dark:bg-slate-800/80 border border-gray-200/80 dark:border-slate-700/80">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-slate-400 mb-2">
-            <MessageSquare className="w-4 h-4 text-brand-600 dark:text-indigo-400" />
+        <div className="my-4 sm:my-5 p-3.5 sm:p-4 rounded-xl bg-muted/50 border border-border">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            <MessageSquare className="w-4 h-4 text-primary" />
             <span>Remarks</span>
           </div>
-          <p className="text-base text-gray-800 dark:text-slate-200 font-medium leading-relaxed">
+          <p className="text-sm sm:text-base text-foreground font-medium leading-relaxed">
             {remarksText || 'No remarks recorded.'}
           </p>
         </div>
 
         {/* Permit Details Grid */}
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 font-medium mb-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-sm">
+          <div className="p-3 bg-muted/40 rounded-lg border border-border">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium mb-1">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Environmental Law</span>
             </div>
-            <div className="font-semibold text-gray-900 dark:text-slate-200 truncate" title={permit.environmental_law}>
+            <div className="font-semibold text-foreground truncate" title={permit.environmental_law}>
               {permit.environmental_law || '—'}
             </div>
           </div>
 
-          <div className="p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 font-medium mb-1">
+          <div className="p-3 bg-muted/40 rounded-lg border border-border">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium mb-1">
               <Hash className="w-3.5 h-3.5" />
               <span>Permit No.</span>
             </div>
-            <div className="font-mono font-semibold text-gray-900 dark:text-slate-200 truncate" title={permit.permit_no}>
+            <div className="font-mono font-semibold text-foreground truncate" title={permit.permit_no}>
               {permit.permit_no || '—'}
             </div>
           </div>
 
-          <div className="p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 font-medium mb-1">
+          <div className="p-3 bg-muted/40 rounded-lg border border-border">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium mb-1">
               <Building className="w-3.5 h-3.5" />
               <span>Unit / Coverage</span>
             </div>
-            <div className="font-semibold text-gray-900 dark:text-slate-200 truncate" title={permit.unit_coverage}>
+            <div className="font-semibold text-foreground truncate" title={permit.unit_coverage}>
               {permit.unit_coverage || '—'}
             </div>
           </div>
 
-          <div className="p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 font-medium mb-1">
+          <div className="p-3 bg-muted/40 rounded-lg border border-border">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium mb-1">
               <Tag className="w-3.5 h-3.5" />
               <span>Description</span>
             </div>
-            <div className="font-semibold text-gray-900 dark:text-slate-200 truncate" title={permit.description}>
+            <div className="font-semibold text-foreground truncate" title={permit.description}>
               {permit.description || '—'}
             </div>
           </div>
 
-          <div className="p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 font-medium mb-1">
+          <div className="p-3 bg-muted/40 rounded-lg border border-border">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium mb-1">
               <Calendar className="w-3.5 h-3.5" />
               <span>Date Issued</span>
             </div>
-            <div className="font-semibold text-gray-900 dark:text-slate-200">
+            <div className="font-semibold text-foreground">
               {formatDateDisplay(permit.date_issued)}
             </div>
           </div>
 
-          <div className="p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 font-medium mb-1">
+          <div className="p-3 bg-muted/40 rounded-lg border border-border">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium mb-1">
               <Calendar className="w-3.5 h-3.5" />
               <span>Expiry Date</span>
             </div>
-            <div className="font-semibold text-gray-900 dark:text-slate-200">
+            <div className="font-semibold text-foreground">
               {formatDateDisplay(permit.expiry)}
             </div>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-3 pt-5 mt-5 border-t border-gray-100 dark:border-slate-800">
+        <div className="flex items-center justify-end gap-3 pt-5 mt-5 border-t border-border">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-input rounded-md hover:bg-muted transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -152,7 +152,7 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
               onClose();
               onEdit(permit);
             }}
-            className="px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-white dark:bg-indigo-600 dark:hover:bg-indigo-500 transition-colors shadow-sm flex items-center gap-2 cursor-pointer"
+            className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary border border-transparent rounded-md hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2 cursor-pointer"
           >
             <Edit3 className="w-4 h-4" />
             <span>Edit Permit</span>

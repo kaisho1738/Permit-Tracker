@@ -12,6 +12,7 @@ export function usePermits() {
   const [isAdding, setIsAdding] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [isDeletingBatch, setIsDeletingBatch] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +21,7 @@ export function usePermits() {
   const [sortField, setSortField] = useState<SortField>('expiry');
   const [sortDir, setSortDir] = useState<SortDirection>('asc');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const PAGE_SIZE = 6;
+  const PAGE_SIZE = 10;
 
   const { session } = useAuth();
 
@@ -119,7 +120,7 @@ export function usePermits() {
     }
   }, [currentPage, totalPages]);
 
-  // Sliced permits for current page (5 items per page)
+  // Sliced permits for current page (PAGE_SIZE items per page)
   const paginatedPermits = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE;
     return filteredPermits.slice(start, start + PAGE_SIZE);
@@ -214,6 +215,31 @@ export function usePermits() {
     }
   };
 
+  const deletePermits = async (ids: number[]) => {
+    if (!session?.access_token || ids.length === 0) return;
+    setIsDeletingBatch(true);
+    try {
+      const response = await fetch(`${API_BASE}/permits/batch-delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ ids })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to delete permits');
+      }
+      setPermits((prev) => prev.filter((p) => !ids.includes(p.id)));
+    } catch (err) {
+      console.error(err);
+      throw err;
+    } finally {
+      setIsDeletingBatch(false);
+    }
+  };
+
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
@@ -240,7 +266,7 @@ export function usePermits() {
       };
 
       const col = {
-        plant: findCol('powerplant name', 'powerplant', 'plant name', 'plant'),
+        plant: findCol('company name', 'company', 'powerplant name', 'powerplant', 'plant name', 'plant'),
         environmental_law: findCol('environmental law', 'law', 'environmental_law'),
         description: findCol('description', 'desc'),
         permit: findCol('permit', 'permit type', 'permit_type'),
@@ -343,11 +369,13 @@ export function usePermits() {
     addPermit,
     updatePermit,
     deletePermit,
+    deletePermits,
     importCSVData,
     loading,
     isAdding,
     isUpdating,
     deletingId,
+    isDeletingBatch,
     isImporting,
     error,
   };

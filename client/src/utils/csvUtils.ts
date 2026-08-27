@@ -8,7 +8,7 @@ export function exportPermitsToCSV(permits: Permit[]): boolean {
   if (permits.length === 0) return false;
 
   const headers = [
-    'Powerplant Name',
+    'Company Name',
     'Environmental Law',
     'Description',
     'Permit',

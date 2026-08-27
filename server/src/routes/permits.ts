@@ -130,6 +130,37 @@ router.post('/batch-import', async (req: AuthenticatedRequest, res: Response) =>
   }
 });
 
+// POST batch delete permits for authenticated user
+router.post('/batch-delete', async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: 'User ID missing from authentication' });
+    }
+
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'Expected a non-empty array of ids in request body' });
+    }
+
+    const { error } = await supabase
+      .from('permits')
+      .delete()
+      .in('permit_id', ids)
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('[POST /api/permits/batch-delete] Supabase Delete Error:', error);
+      return res.status(500).json({ error: error.message, details: error });
+    }
+
+    return res.json({ success: true, message: `${ids.length} permits deleted` });
+  } catch (err: any) {
+    console.error('[POST /api/permits/batch-delete] Server Exception:', err);
+    return res.status(500).json({ error: err.message || 'Internal server error' });
+  }
+});
+
 // POST create permit for authenticated user
 router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   try {

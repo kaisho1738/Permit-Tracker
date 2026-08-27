@@ -5,13 +5,13 @@ import { AuthPage } from './pages/AuthPage';
 import { usePermits } from './hooks/usePermits';
 import { Header } from './components/Header';
 import { StatCards } from './components/StatCards';
-import { StatusBreakdown } from './components/StatusBreakdown';
 import { TableControls } from './components/TableControls';
 import { PermitTable } from './components/PermitTable';
 import { NextToExpireSidebar } from './components/NextToExpireSidebar';
 import { PermitModal } from './components/PermitModal';
 import { RemarksModal } from './components/RemarksModal';
 import { SortModal } from './components/SortModal';
+import { DeleteConfirmModal } from './components/DeleteConfirmModal';
 import { Toast } from './components/Toast';
 import { Pagination } from './components/Pagination';
 import { exportPermitsToCSV } from './utils/csvUtils';
@@ -22,9 +22,9 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white">
-        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm font-medium text-slate-400">Loading session...</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-foreground">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-sm font-medium text-muted-foreground">Loading session...</p>
       </div>
     );
   }
@@ -57,11 +57,13 @@ const Dashboard: React.FC = () => {
     addPermit,
     updatePermit,
     deletePermit,
+    deletePermits,
     importCSVData,
     loading,
     isAdding,
     isUpdating,
     deletingId,
+    isDeletingBatch,
     isImporting,
   } = usePermits();
 
@@ -82,7 +84,27 @@ const Dashboard: React.FC = () => {
   });
 
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
+  const [isNextToExpireOpen, setIsNextToExpireOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768 ? 'cards' : 'table'
+  );
+  const [selectedPermitIds, setSelectedPermitIds] = useState<number[]>([]);
+  const [deleteModalState, setDeleteModalState] = useState<{
+    isOpen: boolean;
+    type: 'single' | 'batch';
+    permitId?: number;
+    permitName?: string;
+    count?: number;
+  }>({
+    isOpen: false,
+    type: 'single',
+  });
+
+  // Clear selection when view changes (filters, search, pagination)
+  React.useEffect(() => {
+    setSelectedPermitIds([]);
+  }, [searchQuery, statusFilter, sortField, sortDir, currentPage]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -127,14 +149,69 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleDeletePermit = async (id: number) => {
-    if (window.confirm('Are you sure you want to remove this permit?')) {
-      try {
+  const handleDeletePermit = (id: number) => {
+    const targetPermit = permits.find((p) => p.id === id);
+    const itemName = targetPermit
+      ? `${targetPermit.plant ? `${targetPermit.plant} — ` : ''}${targetPermit.permit}`
+      : undefined;
+
+    setDeleteModalState({
+      isOpen: true,
+      type: 'single',
+      permitId: id,
+      permitName: itemName,
+    });
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedPermitIds.length === 0) return;
+    setDeleteModalState({
+      isOpen: true,
+      type: 'batch',
+      count: selectedPermitIds.length,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (deleteModalState.type === 'single' && deleteModalState.permitId !== undefined) {
+        const id = deleteModalState.permitId;
         await deletePermit(id);
-        showToast('Permit removed');
-      } catch (err: any) {
-        showToast('Error removing permit: ' + err.message);
+        setSelectedPermitIds((prev) => prev.filter((pid) => pid !== id));
+        showToast('Permit removed successfully');
+      } else if (deleteModalState.type === 'batch' && selectedPermitIds.length > 0) {
+        const count = selectedPermitIds.length;
+        await deletePermits(selectedPermitIds);
+        showToast(`${count} permit${count !== 1 ? 's' : ''} removed successfully`);
+        setSelectedPermitIds([]);
       }
+      setDeleteModalState((prev) => ({ ...prev, isOpen: false }));
+    } catch (err: any) {
+      showToast('Error removing: ' + err.message);
+    }
+  };
+
+  const handleCloseDeleteModal = () => {
+    if (deletingId || isDeletingBatch) return;
+    setDeleteModalState((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const handleSelectPermit = (id: number, checked: boolean) => {
+    setSelectedPermitIds((prev) =>
+      checked ? [...prev, id] : prev.filter((pid) => pid !== id)
+    );
+  };
+
+  const handleSelectAll = (ids: number[], checked: boolean) => {
+    if (checked) {
+      // Add all ids that are not already selected
+      setSelectedPermitIds((prev) => {
+        const newIds = ids.filter((id) => !prev.includes(id));
+        return [...prev, ...newIds];
+      });
+    } else {
+      // Remove all provided ids from selection
+      setSelectedPermitIds((prev) => prev.filter((id) => !ids.includes(id)));
     }
   };
 
@@ -168,68 +245,75 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f9fafb] text-gray-800 dark:bg-[#0b0f19] dark:text-[#f0f1f2] transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-200">
       {/* Header */}
       <Header
         isImporting={isImporting}
         onAddPermit={handleOpenAddModal}
         onExportCSV={handleExportCSV}
         onImportCSV={handleImportCSV}
+        onOpenNextToExpire={() => setIsNextToExpireOpen(true)}
+        upcomingCount={upcomingPermits.length}
       />
 
       {/* Main Content Dashboard */}
-      <main className="flex-1 p-6 flex flex-col lg:flex-row gap-6 max-w-[1900px] w-full mx-auto">
-        {/* Left Column (Stats, Breakdown & Table) */}
-        <div className="flex-1 flex flex-col gap-6 min-w-0">
-          {/* Summary Cards */}
-          <StatCards
+      <main className="flex-1 p-3 sm:p-4 md:p-6 flex flex-col gap-4 sm:gap-6 max-w-[1900px] w-full mx-auto">
+        {/* Summary Cards */}
+        <StatCards
+          counts={statusCounts}
+          activeFilter={statusFilter}
+          onSelectFilter={setStatusFilter}
+        />
+
+        {/* Table Container */}
+        <section className="bg-card text-card-foreground border border-border rounded-xl shadow-xs flex-1 flex flex-col overflow-hidden transition-colors">
+          {/* Search & Filters */}
+          <TableControls
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            sortField={sortField}
+            sortDir={sortDir}
+            onOpenSortModal={() => setIsSortModalOpen(true)}
             counts={statusCounts}
-            activeFilter={statusFilter}
-            onSelectFilter={setStatusFilter}
+            totalFiltered={filteredPermits.length}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            selectedCount={selectedPermitIds.length}
+            onBatchDelete={handleBatchDelete}
+            isDeletingBatch={isDeletingBatch}
           />
 
-          {/* Distribution Bar */}
-          <StatusBreakdown counts={statusCounts} />
+          {/* Main Table / Cards View */}
+          <PermitTable
+            permits={paginatedPermits}
+            isLoading={loading}
+            deletingId={deletingId}
+            onViewRemarks={handleViewRemarks}
+            onDeletePermit={handleDeletePermit}
+            onOpenAddModal={handleOpenAddModal}
+            viewMode={viewMode}
+            selectedIds={selectedPermitIds}
+            onSelectPermit={handleSelectPermit}
+            onSelectAll={handleSelectAll}
+          />
 
-          {/* Table Container */}
-          <section className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg shadow-sm flex-1 flex flex-col overflow-hidden transition-colors">
-            {/* Search & Filters */}
-            <TableControls
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-              sortField={sortField}
-              sortDir={sortDir}
-              onOpenSortModal={() => setIsSortModalOpen(true)}
-              counts={statusCounts}
-              totalFiltered={filteredPermits.length}
-            />
+          {/* Pagination Controls */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredPermits.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+          />
+        </section>
 
-            {/* Main Table */}
-            <PermitTable
-              permits={paginatedPermits}
-              isLoading={loading}
-              deletingId={deletingId}
-              onViewRemarks={handleViewRemarks}
-              onDeletePermit={handleDeletePermit}
-              onOpenAddModal={handleOpenAddModal}
-            />
-
-            {/* Pagination Controls */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={filteredPermits.length}
-              pageSize={pageSize}
-              onPageChange={setCurrentPage}
-            />
-          </section>
-        </div>
-
-        {/* Right Sidebar (Next to Expire) */}
+        {/* Next to Expire Slide-Over Notification Drawer */}
         <NextToExpireSidebar
-          upcomingPermits={upcomingPermits}
+          isOpen={isNextToExpireOpen}
+          onClose={() => setIsNextToExpireOpen(false)}
+          permits={permits}
           onSelectFilter={setStatusFilter}
         />
       </main>
@@ -258,6 +342,16 @@ const Dashboard: React.FC = () => {
         isSaving={isAdding || isUpdating}
         onClose={handleCloseModal}
         onSave={handleSavePermit}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteModalState.isOpen}
+        count={deleteModalState.count}
+        itemName={deleteModalState.permitName}
+        isDeleting={Boolean(deletingId) || isDeletingBatch}
+        onConfirm={handleConfirmDelete}
+        onClose={handleCloseDeleteModal}
       />
 
       {/* Toast Feedback */}

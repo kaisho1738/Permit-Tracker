@@ -58,13 +58,12 @@ export const PermitModal: React.FC<PermitModalProps> = ({
     e.preventDefault();
 
     if (!plant.trim() && !permitTitle.trim()) {
-      alert('Please provide at least a Powerplant Name or Permit title.');
+      alert('Please fill in at least the Company Name or Permit Title');
       return;
     }
 
-    const remarksAuto = remarks.trim() === '';
-    const computedRemarks =
-      remarksAuto && expiry ? getRemarks(getMonthsDiff(expiry)) : remarks.trim();
+    const calculatedRemarks = getRemarks(getMonthsDiff(expiry));
+    const finalRemarks = remarks.trim() ? remarks : calculatedRemarks;
 
     onSave({
       plant: plant.trim(),
@@ -75,23 +74,23 @@ export const PermitModal: React.FC<PermitModalProps> = ({
       permit_no: permitNo.trim(),
       date_issued: dateIssued,
       expiry,
-      remarks: computedRemarks,
-      remarksAuto,
+      remarks: finalRemarks,
+      remarksAuto: remarks.trim() === '',
     });
   };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-2xl max-w-xl w-full p-6 transition-all duration-200 relative animate-in fade-in zoom-in-95">
+      <div className="bg-card text-card-foreground border border-border rounded-xl shadow-2xl max-w-xl w-full p-4 sm:p-6 transition-all duration-200 relative animate-in fade-in zoom-in-95">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-slate-800 mb-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+        <div className="flex items-center justify-between pb-4 border-b border-border mb-5">
+          <h2 className="text-lg font-semibold text-foreground">
             {permit ? 'Edit Permit Details' : 'Add New Permit'}
           </h2>
           <button
             onClick={onClose}
             disabled={isSaving}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -101,8 +100,8 @@ export const PermitModal: React.FC<PermitModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
-                Powerplant Name *
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                Company Name *
               </label>
               <input
                 type="text"
@@ -111,12 +110,12 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 value={plant}
                 onChange={(e) => setPlant(e.target.value)}
                 placeholder="e.g. Batangas Power Corp"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                 Permit Title *
               </label>
               <input
@@ -126,14 +125,14 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 value={permitTitle}
                 onChange={(e) => setPermitTitle(e.target.value)}
                 placeholder="e.g. Permit to Operate"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                 Environmental Law
               </label>
               <input
@@ -142,12 +141,12 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 value={environmentalLaw}
                 onChange={(e) => setEnvironmentalLaw(e.target.value)}
                 placeholder="e.g. Philippine Clean Water Act"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                 Permit No.
               </label>
               <input
@@ -156,14 +155,14 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 value={permitNo}
                 onChange={(e) => setPermitNo(e.target.value)}
                 placeholder="e.g. XX-123-45-67890"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 font-mono focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground font-mono focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                 Description
               </label>
               <input
@@ -172,12 +171,12 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. WasteWater Discharge Permit"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                 Unit / Coverage
               </label>
               <input
@@ -186,14 +185,14 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 value={unitCoverage}
                 onChange={(e) => setUnitCoverage(e.target.value)}
                 placeholder="e.g. Oil Water Separator"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                 Date Issued
               </label>
               <input
@@ -201,12 +200,12 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 disabled={isSaving}
                 value={dateIssued}
                 onChange={(e) => setDateIssued(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
                 Expiry Date
               </label>
               <input
@@ -214,13 +213,13 @@ export const PermitModal: React.FC<PermitModalProps> = ({
                 disabled={isSaving}
                 value={expiry}
                 onChange={(e) => setExpiry(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none disabled:opacity-60"
+                className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none disabled:opacity-60"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1 uppercase tracking-wide">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
               Remarks
             </label>
             <textarea
@@ -228,28 +227,28 @@ export const PermitModal: React.FC<PermitModalProps> = ({
               disabled={isSaving}
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
-              placeholder="Optional remarks (leave blank to auto-calculate from expiry date)"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:ring-1 focus:ring-brand-500 dark:focus:ring-indigo-500 focus:border-brand-500 dark:focus:border-indigo-500 outline-none resize-none disabled:opacity-60"
+              placeholder="e.g., Pending for approval"
+              className="w-full px-3 py-2 border border-input rounded-md text-sm bg-card text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:border-primary outline-none resize-none disabled:opacity-60"
             />
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-slate-800 mt-6">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-border mt-6">
             <button
               type="button"
               disabled={isSaving}
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-input rounded-md hover:bg-muted transition-colors cursor-pointer disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="px-5 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 dark:text-white dark:bg-indigo-600 dark:hover:bg-indigo-500 transition-colors shadow-sm cursor-pointer disabled:opacity-50 flex items-center gap-2"
+              className="px-5 py-2 text-sm font-medium text-primary-foreground bg-primary border border-transparent rounded-md hover:bg-primary/90 transition-colors shadow-sm cursor-pointer disabled:opacity-50 flex items-center gap-2"
             >
               {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
-              <span>{isSaving ? 'Saving...' : permit ? 'Update Permit' : 'Save Permit'}</span>
+              <span>{permit ? 'Update Permit' : 'Save Permit'}</span>
             </button>
           </div>
         </form>
@@ -257,4 +256,3 @@ export const PermitModal: React.FC<PermitModalProps> = ({
     </div>
   );
 };
-

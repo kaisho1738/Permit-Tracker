@@ -43,12 +43,12 @@ export const Pagination: React.FC<PaginationProps> = ({
   const pages = getPageNumbers();
 
   return (
-    <div className="px-4 py-3 border-t border-gray-200 dark:border-slate-800 bg-[#fbfbfa] dark:bg-slate-900/60 flex items-center justify-between flex-wrap gap-3 transition-colors">
+    <div className="px-4 py-3 border-t border-border bg-card text-card-foreground flex items-center justify-between flex-wrap gap-3 transition-colors">
       {/* Range Info */}
-      <div className="text-xs sm:text-sm text-gray-500 dark:text-slate-400">
-        Showing <span className="font-semibold text-gray-900 dark:text-slate-100">{startItem}</span> to{' '}
-        <span className="font-semibold text-gray-900 dark:text-slate-100">{endItem}</span> of{' '}
-        <span className="font-semibold text-gray-900 dark:text-slate-100">{totalItems}</span> permits
+      <div className="text-xs sm:text-sm text-muted-foreground">
+        Showing <span className="font-semibold text-foreground">{startItem}</span> to{' '}
+        <span className="font-semibold text-foreground">{endItem}</span> of{' '}
+        <span className="font-semibold text-foreground">{totalItems}</span> permits
       </div>
 
       {/* Navigation Buttons */}
@@ -58,7 +58,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <button
             onClick={() => onPageChange(1)}
             disabled={currentPage === 1}
-            className="p-1.5 rounded-md text-gray-600 dark:text-slate-400 hover:bg-gray-200/70 dark:hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
+            className="p-1.5 rounded-md text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
             title="First Page"
             aria-label="First page"
           >
@@ -70,7 +70,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="p-1.5 rounded-md text-gray-600 dark:text-slate-400 hover:bg-gray-200/70 dark:hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-md text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
           title="Previous Page"
           aria-label="Previous page"
         >
@@ -84,7 +84,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               return (
                 <span
                   key={`ellipsis-${idx}`}
-                  className="px-2 py-1 text-xs text-gray-400 dark:text-slate-500 select-none"
+                  className="px-2 py-1 text-xs text-muted-foreground select-none"
                 >
                   ...
                 </span>
@@ -100,8 +100,8 @@ export const Pagination: React.FC<PaginationProps> = ({
                 onClick={() => onPageChange(pageNum)}
                 className={`min-w-[32px] h-8 px-2 text-xs sm:text-sm font-medium rounded-md transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-brand-600 text-white dark:bg-indigo-600 dark:text-white shadow-xs font-semibold'
-                    : 'text-gray-700 hover:bg-gray-200/70 dark:text-slate-300 dark:hover:bg-slate-800'
+                    ? 'bg-primary text-primary-foreground shadow-xs font-semibold'
+                    : 'text-foreground hover:bg-muted'
                 }`}
                 aria-label={`Page ${pageNum}`}
                 aria-current={isActive ? 'page' : undefined}
@@ -116,7 +116,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="p-1.5 rounded-md text-gray-600 dark:text-slate-400 hover:bg-gray-200/70 dark:hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-md text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
           title="Next Page"
           aria-label="Next page"
         >
@@ -128,7 +128,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <button
             onClick={() => onPageChange(totalPages)}
             disabled={currentPage === totalPages}
-            className="p-1.5 rounded-md text-gray-600 dark:text-slate-400 hover:bg-gray-200/70 dark:hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
+            className="p-1.5 rounded-md text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
             title="Last Page"
             aria-label="Last page"
           >

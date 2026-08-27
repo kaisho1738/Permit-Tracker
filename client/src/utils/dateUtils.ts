@@ -86,8 +86,8 @@ export function getStatusMeta(status: StatusType): StatusMetadata {
       return {
         label: 'No Date',
         code: '[GRAY]',
-        badgeClass: 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
-        dotClass: 'bg-gray-400 dark:bg-slate-500',
+        badgeClass: 'bg-muted text-muted-foreground border-border',
+        dotClass: 'bg-muted-foreground',
       };
   }
 }
