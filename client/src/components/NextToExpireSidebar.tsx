@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Permit, FilterStatus } from '../types/permit';
 import { getMonthsDiff, getStatus, getStatusMeta, formatDateDisplay, getRemarks } from '../utils/dateUtils';
 import { Clock, X, AlertTriangle, ChevronRight, Calendar, Building2, ShieldAlert, RotateCcw, Filter } from 'lucide-react';
@@ -8,6 +8,8 @@ interface NextToExpireSidebarProps {
   onClose: () => void;
   permits: Permit[];
   onSelectFilter: (filter: FilterStatus) => void;
+  expireTargetDate: string;
+  setExpireTargetDate: (date: string) => void;
 }
 
 export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
@@ -15,6 +17,8 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
   onClose,
   permits = [],
   onSelectFilter,
+  expireTargetDate,
+  setExpireTargetDate,
 }) => {
   // Default target date: 90 days (approx 3 months) from today
   const getDefaultDate = () => {
@@ -22,8 +26,6 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
     d.setDate(d.getDate() + 90);
     return d.toISOString().split('T')[0];
   };
-
-  const [targetDate, setTargetDate] = useState<string>(getDefaultDate);
 
   // Close drawer on Escape key press
   useEffect(() => {
@@ -62,10 +64,10 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
     { label: '1 Year', days: 365 },
   ];
 
-  // Filter permits expiring on or before targetDate
+  // Filter permits expiring on or before expireTargetDate
   const expiringPermits = useMemo(() => {
-    if (!targetDate) return [];
-    const targetTime = new Date(targetDate).setHours(23, 59, 59, 999);
+    if (!expireTargetDate) return [];
+    const targetTime = new Date(expireTargetDate).setHours(23, 59, 59, 999);
 
     return permits
       .filter((p) => {
@@ -83,7 +85,7 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
         };
       })
       .sort((a, b) => new Date(a.permit.expiry).getTime() - new Date(b.permit.expiry).getTime());
-  }, [permits, targetDate]);
+  }, [permits, expireTargetDate]);
 
   if (!isOpen) return null;
 
@@ -144,7 +146,7 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
             </label>
             <button
               type="button"
-              onClick={() => setTargetDate(getDefaultDate())}
+              onClick={() => setExpireTargetDate(getDefaultDate())}
               className="text-[11px] text-muted-foreground hover:text-primary flex items-center gap-1 cursor-pointer transition-colors"
               title="Reset to 90 days default"
             >
@@ -157,8 +159,8 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
             <input
               id="expiring-date-picker"
               type="date"
-              value={targetDate}
-              onChange={(e) => setTargetDate(e.target.value)}
+              value={expireTargetDate}
+              onChange={(e) => setExpireTargetDate(e.target.value)}
               className="w-full px-3.5 py-2 text-sm bg-background border border-input rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-mono font-medium shadow-xs"
             />
           </div>
@@ -170,12 +172,12 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
             </span>
             {presets.map((preset) => {
               const presetDate = getFutureDateStr(preset.days);
-              const isActive = targetDate === presetDate;
+              const isActive = expireTargetDate === presetDate;
               return (
                 <button
                   key={preset.label}
                   type="button"
-                  onClick={() => setTargetDate(presetDate)}
+                  onClick={() => setExpireTargetDate(presetDate)}
                   className={`px-2.5 py-1 text-xs rounded-md border transition-all cursor-pointer font-medium ${isActive
                       ? 'bg-primary text-primary-foreground border-primary shadow-xs'
                       : 'bg-card text-muted-foreground hover:text-foreground border-border hover:bg-muted'
@@ -196,7 +198,7 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
               <h3 className="text-sm font-semibold text-foreground mb-1">No Permits Expiring</h3>
               <p className="text-xs text-muted-foreground max-w-xs">
                 No permits found with expiry dates on or before{' '}
-                <strong className="text-foreground">{formatDateDisplay(targetDate)}</strong>.
+                <strong className="text-foreground">{formatDateDisplay(expireTargetDate)}</strong>.
               </p>
             </div>
           ) : (
@@ -288,7 +290,7 @@ export const NextToExpireSidebar: React.FC<NextToExpireSidebarProps> = ({
           <div className="p-3.5 sm:p-4 border-t border-border bg-muted/20 flex items-center justify-between text-xs text-muted-foreground shrink-0">
             <span className="flex items-center gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-              <span>{expiringPermits.length} permit{expiringPermits.length !== 1 ? 's' : ''} expiring by {formatDateDisplay(targetDate)}</span>
+              <span>{expiringPermits.length} permit{expiringPermits.length !== 1 ? 's' : ''} expiring by {formatDateDisplay(expireTargetDate)}</span>
             </span>
             <button
               onClick={onClose}
